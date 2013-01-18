@@ -1,5 +1,12 @@
 *.class
 
+# Compilation directories
+out
+build
+
+# Gradle directories
+.gradle
+
 # Package Files #
 *.jar
 *.war
