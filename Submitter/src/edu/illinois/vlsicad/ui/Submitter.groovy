@@ -33,13 +33,16 @@ class Submitter {
         )
     }
 
+    private static int WINDOW_WIDTH = 800
+    private static int WINDOW_HEIGHT = 500
+    private static int HALF_WIDTH = WINDOW_WIDTH / 2
+    private static int QUARTER_HEIGHT = WINDOW_HEIGHT / 4
     // Builds the entire layout using SwingBuilder DSL
     void buildLayout() {
         swing.edt {
             lookAndFeel 'nimbus'
             frame = swing.frame(title: config.window.title,
-                    location: [100, 100],
-                    minimumSize: [500, 500],
+                    minimumSize: [WINDOW_WIDTH, WINDOW_HEIGHT],
                     defaultCloseOperation: EXIT_ON_CLOSE) {
 
                 menuBar() {
@@ -51,25 +54,30 @@ class Submitter {
                         menuItem(action: aboutAction)
                     }
                 }
-                vbox(size: [240, 450], constraints: BorderLayout.LINE_START, border: lineBorder(color: Color.RED)) {
-                    panel(border: compoundBorder([emptyBorder(10), titledBorder('Enter your information')])) {
+                vbox(constraints: BorderLayout.LINE_START, border: lineBorder(color: Color.RED)) {
+                    panel(border: compoundBorder([emptyBorder(1), titledBorder('Enter your information')]),
+                            preferredSize: [HALF_WIDTH, QUARTER_HEIGHT],
+                            maximumSize: [HALF_WIDTH, QUARTER_HEIGHT]) {
                         tableLayout {
                             tr {
                                 td { label 'Username:' }
                                 td { textField text: 'me@example.com', id: 'username', columns: 20 }
                             }
                             tr {
-                                td { label 'Assignment Password' }
+                                td { label 'Assignment password:' }
                                 td { textField text: 'password', id: 'password', columns: 20 }
                             }
                         }
                     }
-                    panel(size: [240, 200], border: compoundBorder([emptyBorder(10), titledBorder('Complete the submission')])) {
+                    panel(border: compoundBorder([emptyBorder(1), titledBorder('Complete the submission')]),
+                            preferredSize: [HALF_WIDTH, 3 * QUARTER_HEIGHT]) {
                         scrollPane { textArea() }
                     }
                 }
-                vbox(size: [240, 450], constraints: BorderLayout.CENTER, border: lineBorder(color: Color.RED)) {
-                    panel(border: compoundBorder([emptyBorder(10), titledBorder('Results')])) {}
+                vbox(constraints: BorderLayout.CENTER, border: lineBorder(color: Color.RED)) {
+                    panel(border: compoundBorder([emptyBorder(1), titledBorder('Results')])) {
+                        scrollPane { textArea() }
+                    }
                 }
             }
         }
