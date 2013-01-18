@@ -1,6 +1,7 @@
 package edu.illinois.vlsicad.core
 
 import groovyx.net.http.HTTPBuilder
+import java.security.MessageDigest
 
 /**
  * A direct port of the python example from
@@ -14,7 +15,7 @@ class CourseraAPIUtils {
     /**
      * Gets the challenge salt from the server. Returns a map of [email: ?, ch: ?, state: ?, ch_aux: ?]
      * @param email Student's e-mail
-     * @param assignment_part The assignmet part as declared on the assignment page
+     * @param assignment_part The assignment part as declared on the assignment page
      */
     static getChallenge(email, assignment_part) {
         def http = new HTTPBuilder(challenge_url());
@@ -28,6 +29,15 @@ class CourseraAPIUtils {
             return []
         }
         return [email: splits[2], ch: splits[4], state: splits[6], ch_aux: splits[8]]
+    }
+    /**
+     * @param password Student password for this particular assignment
+     * @param challenge The challenge from the server
+     */
+    static challengeResponse(password, challenge) {
+        MessageDigest digest = MessageDigest.getInstance("SHA1")
+        digest.update((challenge + password).getBytes())
+        return new BigInteger(1, digest.digest()).toString(16)
     }
 
     /**
