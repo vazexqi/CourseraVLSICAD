@@ -2,6 +2,7 @@
 <project version="4">
   <component name="GradleSettings">
     <option name="gradleHome" value="/opt/local/share/java/gradle" />
+    <option name="linkedProjectPath" value="$PROJECT_DIR$/Submitter/build.gradle" />
   </component>
 </project>
 

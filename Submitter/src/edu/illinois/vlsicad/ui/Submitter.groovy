@@ -1,5 +1,6 @@
 package edu.illinois.vlsicad.ui
 
+import edu.illinois.vlsicad.core.CourseraAPIUtils
 import groovy.swing.SwingBuilder
 
 import java.awt.*
@@ -7,8 +8,6 @@ import java.awt.*
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE
 
 class Submitter {
-    private static final String PROPERTIES_FILE = 'resources/properties.groovy'
-
     def swing // The SwingBuilder that will be used to build the application
     def frame // The main frame for the application
     def config // The config reader to read general properties
@@ -18,7 +17,7 @@ class Submitter {
 
     Submitter() {
         swing = new SwingBuilder()
-        config = new ConfigSlurper().parse(new File(PROPERTIES_FILE).toURI().toURL())
+        config = new ConfigSlurper().parse(new File(CourseraAPIUtils.PROPERTIES_FILE).toURI().toURL())
 
         // Create all actions
         loadAction = swing.action(
