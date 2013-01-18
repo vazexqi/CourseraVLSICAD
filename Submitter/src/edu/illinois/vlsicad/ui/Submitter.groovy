@@ -69,13 +69,15 @@ class Submitter {
                             }
                         }
                     }
-                    panel(border: compoundBorder([emptyBorder(1), titledBorder('Complete the submission')]),
+                    panel(border: compoundBorder([lineBorder(color: Color.RED), titledBorder('Complete the submission')]),
                             preferredSize: [HALF_WIDTH, 3 * QUARTER_HEIGHT]) {
-                        scrollPane { textArea() }
+                        borderLayout()
+                        scrollPane(border: lineBorder(color: Color.RED)) { textArea() }
                     }
                 }
                 vbox(constraints: BorderLayout.CENTER, border: lineBorder(color: Color.RED)) {
                     panel(border: compoundBorder([emptyBorder(1), titledBorder('Results')])) {
+                        borderLayout()
                         scrollPane { textArea() }
                     }
                 }
