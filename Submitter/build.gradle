@@ -1,0 +1,17 @@
+apply plugin: 'groovy'
+
+sourceCompatibility= JavaVersion.VERSION_1_6
+
+repositories {
+    mavenCentral()
+
+    // For Groovy/GPars
+    maven {
+        url 'http://repository.codehaus.org/'
+    }
+}
+
+dependencies {
+    // Libraries for Groovy
+    groovy group: 'org.codehaus.groovy.modules.http-builder', name:'http-builder', version:'0.6'
+}
