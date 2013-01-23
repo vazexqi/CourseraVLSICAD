@@ -7,6 +7,9 @@ build
 # Gradle directories
 .gradle
 
+# Special configurations
+Grader/resources/config.groovy
+
 # Package Files #
 *.jar
 *.war
