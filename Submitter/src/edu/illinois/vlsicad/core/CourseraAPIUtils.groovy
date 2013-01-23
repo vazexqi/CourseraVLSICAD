@@ -35,14 +35,14 @@ class CourseraAPIUtils {
      * @return The challenge URL
      */
     static challengeURL() {
-        return "https://class.coursera.org/" + generalConfiguration.core.course.session + "/assignment/challenge"
+        "https://class.coursera.org/" + generalConfiguration.core.course.session + "/assignment/challenge"
     }
 
     /**
      * @return The submission URL
      */
     static submitURL() {
-        return "https://class.coursera.org/" + generalConfiguration.core.course.session + "/assignment/submit"
+        "https://class.coursera.org/" + generalConfiguration.core.course.session + "/assignment/submit"
     }
 }
 
