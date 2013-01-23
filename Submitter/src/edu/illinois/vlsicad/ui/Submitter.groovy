@@ -17,7 +17,7 @@ class Submitter {
 
     Submitter() {
         swing = new SwingBuilder()
-        config = new ConfigSlurper().parse(new File(CourseraAPIUtils.PROPERTIES_FILE).toURI().toURL())
+        config = CourseraAPIUtils.generalConfiguration
 
         // Create all actions
         loadAction = swing.action(

@@ -9,8 +9,8 @@ import java.security.MessageDigest
  * - http://support.coursera.org/customer/portal/articles/573466-programming-assignments
  */
 class CourseraAPIUtils {
-    public static final String PROPERTIES_FILE = 'resources/properties.groovy'
-    static config = new ConfigSlurper().parse(new File(PROPERTIES_FILE).toURI().toURL())
+    static final String GENERAL_PROPERTIES_FILE = 'resources/general.groovy'
+    static generalConfiguration = new ConfigSlurper().parse(new File(GENERAL_PROPERTIES_FILE).toURI().toURL())
 
     /**
      * Gets the challenge salt from the server. Returns a partially filled Submission object based on the server response
@@ -35,14 +35,14 @@ class CourseraAPIUtils {
      * @return The challenge URL
      */
     static challengeURL() {
-        return "https://class.coursera.org/" + config.core.course.session + "/assignment/challenge"
+        return "https://class.coursera.org/" + generalConfiguration.core.course.session + "/assignment/challenge"
     }
 
     /**
      * @return The submission URL
      */
     static submitURL() {
-        return "https://class.coursera.org/" + config.core.course.session + "/assignment/submit"
+        return "https://class.coursera.org/" + generalConfiguration.core.course.session + "/assignment/submit"
     }
 }
 
