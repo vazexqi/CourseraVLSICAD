@@ -1,6 +1,6 @@
 package edu.illinois.vlsicad.ui
 
-import edu.illinois.vlsicad.core.CourseraAPIUtils
+import edu.illinois.vlsicad.core.*
 import groovy.swing.SwingBuilder
 
 import java.awt.*
@@ -8,28 +8,48 @@ import java.awt.*
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE
 
 class Submitter {
-    def swing // The SwingBuilder that will be used to build the application
+    def swingBuilder // The SwingBuilder that will be used to build the application
     def frame // The main frame for the application
     def config // The config reader to read general properties
 
     def loadAction
     def aboutAction
+    def submitAction
+
+    Student student
+
+    // TODO: Refactor this into its own dynamically loaded module
+    // Assignment specific portion
+    def assignmentPart = "bc-calculator-dev"
+    def sampleText = """\
+a = 5
+b = 4
+c = a * b
+c
+"""
 
     Submitter() {
-        swing = new SwingBuilder()
+        swingBuilder = new SwingBuilder()
         config = CourseraAPIUtils.generalConfiguration
 
+        initializeStudent()
+
         // Create all actions
-        loadAction = swing.action(
+        loadAction = swingBuilder.action(
                 name: 'Load Assignment',
                 closure: this.&loadAssignment,
                 mnemonic: 'O',
         )
-        aboutAction = swing.action(
+        aboutAction = swingBuilder.action(
                 name: 'About',
                 closure: this.&showAbout,
                 mnemonic: 'A',
         )
+    }
+
+    def initializeStudent() {
+        // TODO: Read the student input from some file if possible
+        student = new Student(email: "me@example.com", password: "password")
     }
 
     private static int WINDOW_WIDTH = 800
@@ -38,9 +58,9 @@ class Submitter {
     private static int QUARTER_HEIGHT = WINDOW_HEIGHT / 4
     // Builds the entire layout using SwingBuilder DSL
     void buildLayout() {
-        swing.edt {
+        swingBuilder.edt {
             lookAndFeel 'nimbus'
-            frame = swing.frame(title: config.window.title,
+            frame = swingBuilder.frame(title: config.window.title,
                     minimumSize: [WINDOW_WIDTH, WINDOW_HEIGHT],
                     defaultCloseOperation: EXIT_ON_CLOSE) {
 
@@ -53,31 +73,52 @@ class Submitter {
                         menuItem(action: aboutAction)
                     }
                 }
-                vbox(constraints: BorderLayout.LINE_START, border: lineBorder(color: Color.RED)) {
+                vbox(constraints: BorderLayout.LINE_START) {
                     panel(border: compoundBorder([emptyBorder(1), titledBorder('Enter your information')]),
                             preferredSize: [HALF_WIDTH, QUARTER_HEIGHT],
                             maximumSize: [HALF_WIDTH, QUARTER_HEIGHT]) {
                         tableLayout {
                             tr {
                                 td { label 'Username:' }
-                                td { textField text: 'me@example.com', id: 'username', columns: 20 }
+                                td { textField text: student.email, id: 'username', columns: 20  }
                             }
                             tr {
                                 td { label 'Assignment password:' }
-                                td { textField text: 'password', id: 'password', columns: 20 }
+                                td { textField text: student.password, id: 'password', columns: 20 }
                             }
                         }
                     }
-                    panel(border: compoundBorder([lineBorder(color: Color.RED), titledBorder('Complete the submission')]),
+                    panel(border: compoundBorder([titledBorder('Complete the submission')]),
                             preferredSize: [HALF_WIDTH, 3 * QUARTER_HEIGHT]) {
                         borderLayout()
-                        scrollPane(border: lineBorder(color: Color.RED)) { textArea() }
+                        scrollPane(constraints: BorderLayout.CENTER) { textArea(id: 'bcCommands', text: sampleText) }
+                        hbox(constraints: BorderLayout.PAGE_END) {
+                            hglue()
+                            button(text: 'Submit', actionPerformed: {
+                                //TODO: Add action listeners/bindings for these updates?
+                                student.email = swingBuilder."username".text
+                                student.password = swingBuilder."password".text
+
+                                def submission = CourseraAPIUtils.getChallenge(student, assignmentPart)
+                                submission.answer = new Answer(answer: swingBuilder."bcCommands".text)
+                                def response = submission.submit()
+
+                                def currentResult = swingBuilder."results".text
+                                swingBuilder."results".text = currentResult + System.getProperty("line.separator") + response
+                            }
+                            )
+                        }
+
                     }
                 }
-                vbox(constraints: BorderLayout.CENTER, border: lineBorder(color: Color.RED)) {
+                vbox(constraints: BorderLayout.CENTER) {
                     panel(border: compoundBorder([emptyBorder(1), titledBorder('Results')])) {
                         borderLayout()
-                        scrollPane { textArea() }
+                        scrollPane { textArea(id: 'results') }
+                        hbox(constraints: BorderLayout.PAGE_END) {
+                            hglue()
+                            button 'Refresh'
+                        }
                     }
                 }
             }
