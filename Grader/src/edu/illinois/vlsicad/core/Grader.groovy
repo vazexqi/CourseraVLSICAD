@@ -10,7 +10,40 @@ class Grader {
     static final String GENERAL_PROPERTIES_FILE = 'resources/config.groovy'
     static config = new ConfigSlurper().parse(new File(GENERAL_PROPERTIES_FILE).toURI().toURL())
 
-    def gradeSubmissions() {
+    /**
+     * Grades the assignment and constructs a new Grade object with the score and feedback
+     * This part is assignment specific and the code below is just a port of the Coursera example
+     */
+    def grade(Submission submission) {
+        println "Official Solution: ${submission.answer.solutions}"
+        println "Student submission ${submission.answer.answer}"
+
+        def solutions = submission.answer.solutions.split("\\r?\\n")
+        def submissions = submission.answer.answer.split("\\r?\\n")
+        def numCorrect = 0
+
+        solutions.eachWithIndex { String entry, int i ->
+            def currentSubmission = submissions[i].split(',')
+            if (currentSubmission.length == 2) {
+                if ((currentSubmission[0] as int) + (currentSubmission[1] as int) == (entry as int))
+                    numCorrect++
+            }
+        }
+        float score = numCorrect * 2
+        def feedback = ""
+
+        switch (score) {
+            case 10:
+                feedback = "Congratulations! You got it right!"
+                break
+            case 0:
+                feedback = "Sorry, your answer was incorrect."
+                break
+            default:
+                feedback = "Almost there! You got ${numCorrect} out of 5 test cases right."
+        }
+
+        return new Grade(score: score, feedback: feedback, apiState: submission.apiState)
     }
 
     /**
@@ -40,6 +73,8 @@ class Grader {
 class Submission {
     String apiState
     Answer answer // Solutions from the students
+    String submissionTime
+
     Submission(json) {
         def submission = json.submission
 
@@ -47,6 +82,8 @@ class Submission {
 
         answer = new Answer(answerBase64: submission.submission, additionalDataBase64: submission.submission_aux, solutions: submission.solutions)
         answer.decode()
+
+        submissionTime = submission.submission_metadata.submission_time
     }
 }
 
@@ -55,13 +92,13 @@ class Submission {
  * field for other data (e.g., source files)
  */
 class Answer {
-    byte[] answer, additionalData
+    String answer, additionalData
     String answerBase64, additionalDataBase64
     String solutions // Answers specified on the assignment page, if any
 
     def decode() {
-        answer = answerBase64.decodeBase64()
-        additionalData = additionalDataBase64.decodeBase64()
+        answer = new String(answerBase64.decodeBase64())
+        additionalData = new String(additionalDataBase64.decodeBase64())
     }
 }
 
@@ -71,5 +108,5 @@ class Answer {
 class Grade {
     String apiState
     float score
-    String feedback, feedbackAfterSoftCloseTime, feedbackAfterHardCloseTime
+    String feedback = "", feedbackAfterSoftCloseTime = "", feedbackAfterHardCloseTime = ""
 }
