@@ -23,9 +23,11 @@ dependencies {
 }
 
 task(runUnixBCExample, dependsOn: [compileGroovy], type: JavaExec) {
-    main = 'edu.illinois.edu.vlsicad.UnixBCExample'
+    main = 'edu.illinois.vlsicad.UnixBCExample'
+    classpath = sourceSets.main.runtimeClasspath
 }
 
 task(runUnixBCTerminatedExample, dependsOn: [compileGroovy], type: JavaExec) {
-    main = 'edu.illinois.edu.vlsicad.UnixBCTerminatedExample'
+    main = 'edu.illinois.vlsicad.UnixBCTerminatedExample'
+    classpath = sourceSets.main.runtimeClasspath
 }
