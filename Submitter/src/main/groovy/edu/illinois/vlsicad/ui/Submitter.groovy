@@ -1,6 +1,8 @@
 package edu.illinois.vlsicad.ui
 
-import edu.illinois.vlsicad.core.*
+import edu.illinois.vlsicad.core.Answer
+import edu.illinois.vlsicad.core.CourseraAPIUtils
+import edu.illinois.vlsicad.core.Student
 import groovy.swing.SwingBuilder
 
 import java.awt.*
@@ -80,7 +82,7 @@ c
                         tableLayout {
                             tr {
                                 td { label 'Username:' }
-                                td { textField text: student.email, id: 'username', columns: 20  }
+                                td { textField text: student.email, id: 'username', columns: 20 }
                             }
                             tr {
                                 td { label 'Assignment password:' }
@@ -103,8 +105,9 @@ c
                                 submission.answer = new Answer(answer: swingBuilder."bcCommands".text)
                                 def response = submission.submit()
 
+                                def currentTime = new Date().timeString
                                 def currentResult = swingBuilder."results".text
-                                swingBuilder."results".text = currentResult + System.getProperty("line.separator") + response
+                                swingBuilder."results".text = currentResult + System.getProperty("line.separator") + currentTime + System.getProperty("line.separator") + response
                             }
                             )
                         }
