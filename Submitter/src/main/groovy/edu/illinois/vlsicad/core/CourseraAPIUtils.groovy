@@ -26,7 +26,7 @@ class CourseraAPIUtils {
         def splits = text.split("\\|", -1) // Because challenge_auxiallary might be empty, we need this special version of split to not discard the data
         if (splits.length != 9) {
             System.err << "Badly formatted challenge response: ${text}"
-            return []
+            return new NullSubmission(status: text)
         }
         return new Submission(student: student, assignmentPart: assignmentPart, challenge: splits[4], state: splits[6], challengeAuxillary: splits[8])
     }
@@ -60,7 +60,7 @@ class Submission {
         response.toString().trim()
     }
 
-    def submitThroughHTTP() {
+    private def submitThroughHTTP() {
         def http = new HTTPBuilder(CourseraAPIUtils.submitURL())
         def values = ['assignment_part_sid': assignmentPart,
                 'email_address': student.email,
@@ -72,15 +72,27 @@ class Submission {
         http.post(body: values)
     }
 
-    def prepareForSubmission() {
+    private def prepareForSubmission() {
         challengeResponse = respondToChallenge()
         answer.encode()
     }
 
-    def respondToChallenge() {
+    private def respondToChallenge() {
         MessageDigest digest = MessageDigest.getInstance("SHA1")
         digest.update((challenge + student.password).getBytes())
         return new BigInteger(1, digest.digest()).toString(16)
+    }
+}
+
+/**
+ * A null submission that doesn't do anything
+ */
+class NullSubmission extends Submission {
+    String status
+
+    def submit() {
+       // Does nothing but returns the error status from earlier
+       return status
     }
 }
 
