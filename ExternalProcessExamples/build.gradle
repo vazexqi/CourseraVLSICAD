@@ -21,3 +21,11 @@ dependencies {
     // Libraries for Groovy
     groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.0.6'
 }
+
+task(runUnixBCExample, dependsOn: [compileGroovy], type: JavaExec) {
+    main = 'edu.illinois.edu.vlsicad.UnixBCExample'
+}
+
+task(runUnixBCTerminatedExample, dependsOn: [compileGroovy], type: JavaExec) {
+    main = 'edu.illinois.edu.vlsicad.UnixBCTerminatedExample'
+}
