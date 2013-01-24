@@ -1,0 +1,23 @@
+apply plugin: 'groovy'
+
+sourceCompatibility= JavaVersion.VERSION_1_6
+targetCompatibility= JavaVersion.VERSION_1_6
+
+// See http://gradle.org/docs/current/userguide/gradle_wrapper.html
+task wrapper(type:Wrapper, description:"Package Gradle Wrapper") {
+    gradleVersion = '1.3'
+}
+
+repositories {
+    mavenCentral()
+
+    // For Groovy/GPars
+    maven {
+        url 'http://repository.codehaus.org/'
+    }
+}
+
+dependencies {
+    // Libraries for Groovy
+    groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.0.6'
+}
