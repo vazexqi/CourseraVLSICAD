@@ -96,7 +96,7 @@ class Student {
  * field for other data (e.g., source files)
  */
 class Answer {
-    byte[] answer, additionalData
+    byte[] answer = "", additionalData = ""
     String answerBase64, additionalDataBase64
 
     def encode() {
