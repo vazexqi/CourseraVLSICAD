@@ -13,6 +13,7 @@ class Grader {
     /**
      * Grades the assignment and constructs a new Grade object with the score and feedback
      * This part is assignment specific and the code below is just a port of the Coursera example
+     * @param submission The student submission to grade
      */
     def grade(Submission submission) {
         println "Official Solution: ${submission.answer.solutions}"
@@ -59,6 +60,25 @@ class Grader {
         def json = http.get(headers: api, contentType: 'application/json')
         def submission = (json.submission) ? new Submission(json) : null
         return submission
+    }
+
+    /**
+     * Posts the grade back to Coursera
+     * @param grade The grade to post
+     */
+    def post(Grade grade) {
+        def http = new HTTPBuilder(postURL())
+        def api = ['x-api-key': config.core.coursera.API]
+        def values = ['api_state': grade.apiState,
+                        'score': grade.score,
+                        'feedback': grade.feedback,
+                        'feedback_after_hard_deadline': grade.feedbackAfterHardDeadline,
+                        'feedback_after_soft_close_time': grade.feedbackAfterSoftCloseTime]
+        http.post(headers: api, body:values)
+    }
+
+    def postURL() {
+        "https://class.coursera.org/" + config.core.course.session + "/assignment/api/score"
     }
 
     def pollURL() {
@@ -108,5 +128,5 @@ class Answer {
 class Grade {
     String apiState
     float score
-    String feedback = "", feedbackAfterSoftCloseTime = "", feedbackAfterHardCloseTime = ""
+    String feedback = "", feedbackAfterSoftCloseTime = "", feedbackAfterHardDeadline = ""
 }
