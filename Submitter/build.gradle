@@ -22,3 +22,9 @@ dependencies {
     groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.0.6'
     groovy group: 'org.codehaus.groovy.modules.http-builder', name:'http-builder', version:'0.6'
 }
+
+task(gui, dependsOn: [compileGroovy], type: JavaExec) {
+    main = 'edu.illinois.vlsicad.ui.Submitter'
+    workingDir = new File(project.buildDir, '/resources/main')
+    classpath = sourceSets.main.runtimeClasspath
+}

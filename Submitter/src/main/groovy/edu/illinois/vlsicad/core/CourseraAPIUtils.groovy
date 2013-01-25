@@ -9,7 +9,7 @@ import java.security.MessageDigest
  * - http://support.coursera.org/customer/portal/articles/573466-programming-assignments
  */
 class CourseraAPIUtils {
-    static final String GENERAL_PROPERTIES_FILE = 'resources/config.groovy'
+    static final String GENERAL_PROPERTIES_FILE = 'config.groovy'
     static generalConfiguration = new ConfigSlurper().parse(new File(GENERAL_PROPERTIES_FILE).toURI().toURL())
 
     /**
