@@ -5,6 +5,9 @@ To run (testing)
 
 `./gradlew gui`
 
+![GUI screenshot](https://raw.github.com/vazexqi/CourseraVLSICAD/master/Submitter/doc/screenshot.png)
+
+
 To package (deployment)
 -----------------------
 
