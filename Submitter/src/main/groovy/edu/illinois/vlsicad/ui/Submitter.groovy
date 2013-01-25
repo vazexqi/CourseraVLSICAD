@@ -1,7 +1,7 @@
 package edu.illinois.vlsicad.ui
 
 import edu.illinois.vlsicad.core.Answer
-import edu.illinois.vlsicad.core.CourseraAPIUtils
+import edu.illinois.vlsicad.core.CourseraHTTPUtils
 import edu.illinois.vlsicad.core.Student
 import groovy.swing.SwingBuilder
 
@@ -32,7 +32,7 @@ c
 
     Submitter() {
         swingBuilder = new SwingBuilder()
-        config = CourseraAPIUtils.generalConfiguration
+        config = CourseraHTTPUtils.generalConfiguration
 
         initializeStudent()
 
@@ -82,11 +82,11 @@ c
                         tableLayout {
                             tr {
                                 td { label 'Username:' }
-                                td { textField text: student.email, id: 'username', columns: 20 }
+                                td { textField text: bind(source: student, sourceProperty: 'email', mutual: true), id: 'username', columns: 20 }
                             }
                             tr {
                                 td { label 'Assignment password:' }
-                                td { textField text: student.password, id: 'password', columns: 20 }
+                                td { textField text: bind(source: student, sourceProperty: 'password', mutual: true), id: 'password', columns: 20 }
                             }
                         }
                     }
@@ -97,11 +97,7 @@ c
                         hbox(constraints: BorderLayout.PAGE_END) {
                             hglue()
                             button(text: 'Submit', actionPerformed: {
-                                //TODO: Add action listeners/bindings for these updates?
-                                student.email = swingBuilder."username".text
-                                student.password = swingBuilder."password".text
-
-                                def submission = CourseraAPIUtils.getChallenge(student, assignmentPart)
+                                def submission = CourseraHTTPUtils.getChallenge(student, assignmentPart)
                                 submission.answer = new Answer(answer: swingBuilder."bcCommands".text)
                                 def response = submission.submit()
 

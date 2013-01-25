@@ -1,5 +1,6 @@
 package edu.illinois.vlsicad.core
 
+import groovy.beans.Bindable
 import groovyx.net.http.HTTPBuilder
 
 import java.security.MessageDigest
@@ -8,7 +9,7 @@ import java.security.MessageDigest
  * A direct port of the python example from
  * - http://support.coursera.org/customer/portal/articles/573466-programming-assignments
  */
-class CourseraAPIUtils {
+class CourseraHTTPUtils {
     static final String GENERAL_PROPERTIES_FILE = 'config.groovy'
     static generalConfiguration = new ConfigSlurper().parse(new File(GENERAL_PROPERTIES_FILE).toURI().toURL())
 
@@ -61,7 +62,7 @@ class Submission {
     }
 
     private def submitThroughHTTP() {
-        def http = new HTTPBuilder(CourseraAPIUtils.submitURL())
+        def http = new HTTPBuilder(CourseraHTTPUtils.submitURL())
         def values = ['assignment_part_sid': assignmentPart,
                 'email_address': student.email,
                 'submission': answer.answerBase64,
@@ -91,16 +92,20 @@ class NullSubmission extends Submission {
     String status
 
     def submit() {
-       // Does nothing but returns the error status from earlier
-       return status
+        // Does nothing but returns the error status from earlier
+        return status
     }
 }
 
 /**
- * Represents a student identity for this assignment. The password is assignment specific
+ * Represents a student identity for this assignment. The password is assignment specific.
+ * Uses the @Bindable annotation to make it easier for updates through the UI.
+ * See http://groovy.codehaus.org/Bindable+and+Vetoable+transformation
  */
+@Bindable
 class Student {
-    String email, password
+    String email
+    String password
 }
 
 /**
