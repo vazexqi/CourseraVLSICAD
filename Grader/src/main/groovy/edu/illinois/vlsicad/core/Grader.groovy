@@ -7,7 +7,7 @@ import groovyx.net.http.HTTPBuilder
  * - http://support.coursera.org/customer/portal/articles/573466-programming-assignments
  */
 class Grader {
-    static final String GENERAL_PROPERTIES_FILE = 'resources/config.groovy'
+    static final String GENERAL_PROPERTIES_FILE = 'config.groovy'
     static config = new ConfigSlurper().parse(new File(GENERAL_PROPERTIES_FILE).toURI().toURL())
 
     /**
