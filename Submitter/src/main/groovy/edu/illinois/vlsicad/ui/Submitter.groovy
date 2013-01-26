@@ -6,7 +6,7 @@ import edu.illinois.vlsicad.core.Student
 import groovy.swing.SwingBuilder
 
 import javax.swing.*
-import javax.swing.text.*
+import javax.swing.text.DefaultEditorKit
 import java.awt.*
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE
@@ -16,9 +16,8 @@ class Submitter {
     def frame // The main frame for the application
     def config // The config reader to read general properties
 
-    def loadAction
-    def aboutAction
-    def submitAction
+    Action loadAction, aboutAction
+    Action cutAction, copyAction, pasteAction, selectAllAction // Custom action wrappers for cut/copy/paste that will have better names, bindings, etc
 
     Student student
 
@@ -39,6 +38,11 @@ c
         initializeStudent()
 
         // Create all actions
+        createMenuActions(swingBuilder)
+        createEditorActions(swingBuilder)
+    }
+
+    private def createMenuActions(SwingBuilder swingBuilder) {
         loadAction = swingBuilder.action(
                 name: 'Load Assignment',
                 closure: this.&loadAssignment,
@@ -51,7 +55,27 @@ c
         )
     }
 
-    def initializeStudent() {
+    private def createEditorActions(SwingBuilder swingBuilder) {
+        def map = new JTextArea().getActionMap() // Get default actions available on all JTextPanes
+
+        cutAction = map.get(DefaultEditorKit.cutAction)
+        cutAction.putValue(Action.NAME, "Cut")
+        cutAction.putValue(Action.ACCELERATOR_KEY, swingBuilder.shortcut("X"))
+
+        copyAction = map.get(DefaultEditorKit.copyAction)
+        copyAction.putValue(Action.NAME, "Copy")
+        copyAction.putValue(Action.ACCELERATOR_KEY, swingBuilder.shortcut("C"))
+
+        pasteAction = map.get(DefaultEditorKit.pasteAction)
+        pasteAction.putValue(Action.NAME, "Paste")
+        pasteAction.putValue(Action.ACCELERATOR_KEY, swingBuilder.shortcut("V"))
+
+        selectAllAction = map.get(DefaultEditorKit.selectAllAction)
+        selectAllAction.putValue(Action.NAME, "Select All")
+        selectAllAction.putValue(Action.ACCELERATOR_KEY, swingBuilder.shortcut("A"))
+    }
+
+    private def initializeStudent() {
         // TODO: Read the student input from some file if possible
         student = new Student(email: "me@example.com", password: "password")
     }
@@ -74,10 +98,12 @@ c
                         menuItem(text: 'Quit', actionPerformed: { event -> dispose() })
                     }
                     menu(text: 'Edit') {
-                        def map = new JTextArea().getActionMap() // Get default actions available on all JTextPanes
-                        menuItem(text: 'Cut', action: map.get(DefaultEditorKit.cutAction))
-                        menuItem(text: 'Copy', action: map.get(DefaultEditorKit.copyAction))
-                        menuItem(text: 'Paste', action: map.get(DefaultEditorKit.pasteAction))
+                        menuItem(action: cutAction)
+                        menuItem(action: copyAction)
+                        menuItem(action: pasteAction)
+                        separator()
+                        menuItem(action: selectAllAction)
+
                     }
                     menu(text: 'Help') {
                         menuItem(action: aboutAction)
