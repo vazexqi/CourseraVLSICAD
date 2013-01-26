@@ -5,6 +5,8 @@ import edu.illinois.vlsicad.core.CourseraHTTPUtils
 import edu.illinois.vlsicad.core.Student
 import groovy.swing.SwingBuilder
 
+import javax.swing.*
+import javax.swing.text.*
 import java.awt.*
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE
@@ -70,6 +72,12 @@ c
                     menu(text: 'File') {
                         menuItem(action: loadAction)
                         menuItem(text: 'Quit', actionPerformed: { event -> dispose() })
+                    }
+                    menu(text: 'Edit') {
+                        def map = new JTextArea().getActionMap() // Get default actions available on all JTextPanes
+                        menuItem(text: 'Cut', action: map.get(DefaultEditorKit.cutAction))
+                        menuItem(text: 'Copy', action: map.get(DefaultEditorKit.copyAction))
+                        menuItem(text: 'Paste', action: map.get(DefaultEditorKit.pasteAction))
                     }
                     menu(text: 'Help') {
                         menuItem(action: aboutAction)
