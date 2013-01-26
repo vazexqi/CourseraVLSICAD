@@ -1,5 +1,7 @@
 package edu.illinois.vlsicad
 
+import groovy.io.GroovyPrintWriter
+
 /**
  * This example shows how to use the Groovy Process class to communicate with the BC command line calculator on *nix
  * platforms.
@@ -13,11 +15,12 @@ Process proc = "bc -q".execute() // Starts the bc CLI with -q to suppress its ve
 proc.consumeProcessOutput(sout, serr) // Starts two threads so that standard output and standard err can be captured
 
 proc.withWriter {writer ->
-    writer << "a = 4\n"
-    writer << "b = 5\n"
-    writer << "c = b * a\n"
-    writer << "c\n"
-    writer << "quit\n"
+    def gWriter = new GroovyPrintWriter(writer)
+    writer.println "a = 4"
+    writer.println "b = 5"
+    writer.println "c = b * a"
+    writer.println "c"
+    writer.println "quit"
 }
 proc.waitForOrKill(1000) // Give it 1000 ms to complete or kill the process
 
