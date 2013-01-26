@@ -1,6 +1,8 @@
 package edu.illinois.vlsicad.assignments.bc
 
-import edu.illinois.vlsicad.core.*
+import edu.illinois.vlsicad.core.Grade
+import edu.illinois.vlsicad.core.Grader
+import edu.illinois.vlsicad.core.Submission
 
 class BCGrader extends Grader {
 
@@ -15,8 +17,11 @@ class BCGrader extends Grader {
 
         proc.consumeProcessOutput(sout, serr)
 
-        proc.withWriter {writer ->
-            writer << submission.answer.answer
+        proc.withWriter { writer ->
+            def rawAnswer = submission.answer.answer
+            // Converts the answer (in LR, CR/LF, CR) into one terminated by the platform specific line separator.
+            def platformSpecificNewlineAnswer = rawAnswer.denormalize()
+            writer << normalizedAnswer
         }
 
         proc.waitForOrKill(20000)
@@ -29,7 +34,7 @@ class BCGrader extends Grader {
         feedback << serr.toString()
         feedback << "\n"
 
-        return new Grade(score:1, feedback: feedback as String, apiState: submission.apiState)
+        return new Grade(score: 1, feedback: feedback as String, apiState: submission.apiState)
 
     }
 
