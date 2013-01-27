@@ -1,0 +1,28 @@
+# input variables
+boolean a b cin d0 d1
+#
+# define the correct equation for the adder's carry out
+eval cout a&b + (a+b)&cin
+#
+# define the incorrect version of this equation (just for fun)
+eval wrong a&b + (!(a+b))&cin
+#
+# define to-be-repaired version with 4 EXOR gates and 2:4 DECODER
+eval repair (a&b + ((!(a+b))&!d0 + (a+b)&d0)&cin)&!d1 + (!(a&b +(((a+b))&d0 + (a+b)&!d0)&cin))&d1
+#
+# make the Z function that compares the right version of
+# the network and the version with the EXORs and DECODER
+# (this is EXNOR of cout and repair functions)
+eval Z repair&cout + !repair&!cout
+#
+# universally quantify away the input vars: a b cin
+quantify u ForallZ Z a b cin
+#
+# let's ask kbdd to show an equation for this quantified function
+sop ForallZ
+#
+# what values of the d's make this function == 1?
+satisfy ForallZ
+#
+# that's it!
+quit
