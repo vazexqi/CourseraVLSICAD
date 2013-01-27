@@ -34,10 +34,12 @@ task(runUnixBCTerminatedExample, dependsOn: [compileGroovy], type: JavaExec) {
 
 task(runUnixScriptBCInteractionsExample, dependsOn: [compileGroovy], type: JavaExec) {
     main = 'edu.illinois.vlsicad.UnixScriptBCInteractionsExample'
+    workingDir = new File(project.buildDir, '/resources/main')
     classpath = sourceSets.main.runtimeClasspath
 }
 
-task(UnixScriptKBDDInteractionsExample, dependsOn: [compileGroovy], type: JavaExec) {
+task(runUnixScriptKBDDInteractionsExample, dependsOn: [compileGroovy], type: JavaExec) {
     main = 'edu.illinois.vlsicad.UnixScriptKBDDInteractionsExample'
+    workingDir = new File(project.buildDir, '/resources/main')
     classpath = sourceSets.main.runtimeClasspath
 }
