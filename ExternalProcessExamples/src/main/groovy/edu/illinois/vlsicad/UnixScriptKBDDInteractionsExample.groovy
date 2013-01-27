@@ -15,7 +15,7 @@ def OUTPUT_FILE = "kbddOutput.txt"
 def sysout = new StringBuffer() // To capture the standard output from the process
 def syserr = new StringBuffer() // To capture the standard error from the process
 
-Process proc = "script -q ${OUTPUT_FILE} kbdd".execute() // Starts the bc CLI with -q to suppress its verbose welcome message
+Process proc = "script -q -t0 ${OUTPUT_FILE} kbdd".execute()
 
 proc.consumeProcessOutput(sysout, syserr) // Starts two threads so that standard output and standard err can be captured
 
