@@ -31,3 +31,13 @@ task(runUnixBCTerminatedExample, dependsOn: [compileGroovy], type: JavaExec) {
     main = 'edu.illinois.vlsicad.UnixBCTerminatedExample'
     classpath = sourceSets.main.runtimeClasspath
 }
+
+task(runUnixScriptBCInteractionsExample, dependsOn: [compileGroovy], type: JavaExec) {
+    main = 'edu.illinois.vlsicad.UnixScriptBCInteractionsExample'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task(UnixScriptKBDDInteractionsExample, dependsOn: [compileGroovy], type: JavaExec) {
+    main = 'edu.illinois.vlsicad.UnixScriptKBDDInteractionsExample'
+    classpath = sourceSets.main.runtimeClasspath
+}
