@@ -15,16 +15,10 @@ def OUTPUT_FILE = "kbddOutput.txt"
 def sysout = new StringBuffer() // To capture the standard output from the process
 def syserr = new StringBuffer() // To capture the standard error from the process
 
-Process proc = "script -q -t0 ${OUTPUT_FILE} kbdd".execute()
+Process proc = new ProcessBuilder("script", "--quiet", "--command", "kbdd ${INPUT_FILE}", "${OUTPUT_FILE}").start()
 
 proc.consumeProcessOutput(sysout, syserr) // Starts two threads so that standard output and standard err can be captured
 
-proc.withWriter { writer ->
-    def gWriter = new GroovyPrintWriter(writer)
-    new File(INPUT_FILE).eachLine { line ->
-        gWriter.println(line)
-    }
-}
 proc.waitForOrKill(20000) // Give it 20000 ms to complete or kill the process
 
 println 'Standard out captured from process:\n' + sysout
