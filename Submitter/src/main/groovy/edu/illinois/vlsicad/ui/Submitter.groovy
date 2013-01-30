@@ -162,7 +162,7 @@ c
                             hglue()
                             button(text: 'Submit', actionPerformed: {
                                 def submission = CourseraHTTPUtils.getChallenge(student, assignmentPart)
-                                submission.answer = new Answer(answer: editorPane.text)
+                                submission.answer = new Answer(answer: editorPane.textEditor.text)
                                 def response = submission.submit()
 
                                 def currentTime = new Date().timeString
