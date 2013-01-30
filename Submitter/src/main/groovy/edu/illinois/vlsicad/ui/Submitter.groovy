@@ -7,7 +7,11 @@ import groovy.swing.SwingBuilder
 
 import javax.swing.*
 import javax.swing.text.DefaultEditorKit
+import javax.swing.text.DefaultStyledDocument
+import javax.swing.undo.*
 import java.awt.*
+
+import groovy.ui.ConsoleTextEditor
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE
 
@@ -18,6 +22,9 @@ class Submitter {
 
     Action loadAction, aboutAction
     Action cutAction, copyAction, pasteAction, selectAllAction // Custom action wrappers for cut/copy/paste that will have better names, bindings, etc
+
+    UndoManager undoManager = new UndoManager()
+    ConsoleTextEditor editorPane = new ConsoleTextEditor()
 
     Student student
 
@@ -37,6 +44,8 @@ c
 
         initializeStudent()
 
+        editorPane.textEditor.setDocument(new DefaultStyledDocument()) // Disables any special syntax highlighting
+        
         // Create all actions
         createMenuActions(swingBuilder)
         createEditorActions(swingBuilder)
@@ -127,12 +136,13 @@ c
                     panel(border: compoundBorder([titledBorder('Complete the submission')]),
                             preferredSize: [HALF_WIDTH, 3 * QUARTER_HEIGHT]) {
                         borderLayout()
-                        scrollPane(constraints: BorderLayout.CENTER) { textArea(id: 'bcCommands', text: sampleText) }
+                        editorPane.textEditor.setText(sampleText)
+                        widget(editorPane)
                         hbox(constraints: BorderLayout.PAGE_END) {
                             hglue()
                             button(text: 'Submit', actionPerformed: {
                                 def submission = CourseraHTTPUtils.getChallenge(student, assignmentPart)
-                                submission.answer = new Answer(answer: swingBuilder."bcCommands".text)
+                                submission.answer = new Answer(answer: editorPane.text)
                                 def response = submission.submit()
 
                                 def currentTime = new Date().timeString
