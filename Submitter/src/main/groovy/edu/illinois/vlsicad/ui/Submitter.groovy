@@ -177,7 +177,7 @@ c
                 vbox(constraints: BorderLayout.CENTER) {
                     panel(border: compoundBorder([emptyBorder(1), titledBorder('Results')])) {
                         borderLayout()
-                        scrollPane { textArea(id: 'results') }
+                        scrollPane { textArea(id: 'results', editable: false) }
                         hbox(constraints: BorderLayout.PAGE_END) {
                             hglue()
                             button 'Refresh'
