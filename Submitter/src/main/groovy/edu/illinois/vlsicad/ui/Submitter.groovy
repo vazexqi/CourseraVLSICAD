@@ -5,10 +5,16 @@ import edu.illinois.vlsicad.core.CourseraHTTPUtils
 import edu.illinois.vlsicad.core.Student
 import groovy.swing.SwingBuilder
 import groovy.ui.ConsoleTextEditor
+import groovy.ui.text.FindReplaceUtility
 
 import javax.swing.*
 import javax.swing.text.DefaultEditorKit
 import java.awt.*
+import java.awt.event.ActionEvent
+
+import java.awt.event.InputEvent
+import java.awt.event.KeyEvent
+import javax.swing.KeyStroke
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE
 
@@ -19,6 +25,7 @@ class Submitter {
 
     Action loadAction, aboutAction
     Action cutAction, copyAction, pasteAction, selectAllAction // Custom action wrappers for cut/copy/paste that will have better names, bindings, etc
+    Action findAction, findNextAction, findPreviousAction, replaceAction // Some simple functionality for search and replace
     Action undoAction, redoAction // Custom action wrappers for undo/redo
 
     ConsoleTextEditor editorPane = new ConsoleTextEditor()
@@ -99,6 +106,30 @@ c
         pasteAction.putValue(Action.NAME, "Paste")
         pasteAction.putValue(Action.ACCELERATOR_KEY, swingBuilder.shortcut("V"))
 
+        findAction = swingBuilder.action(
+                name: 'Find...',
+                closure: this.&find,
+                accelerator: swingBuilder.shortcut("F")
+        )
+
+        findNextAction = swingBuilder.action(
+                name: 'Find Next',
+                closure: this.&findNext,
+                accelerator: KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0)
+        )
+
+        findPreviousAction = swingBuilder.action(
+                name: 'Find Previous',
+                closure: this.&findPrevious,
+                accelerator: KeyStroke.getKeyStroke(KeyEvent.VK_F3, InputEvent.SHIFT_DOWN_MASK)
+        )
+
+        replaceAction = swingBuilder.action(
+                name: 'Replace...',
+                closure: this.&replace,
+                accelerator: swingBuilder.shortcut("R")
+        )
+
         selectAllAction = map.get(DefaultEditorKit.selectAllAction)
         selectAllAction.putValue(Action.NAME, "Select All")
         selectAllAction.putValue(Action.ACCELERATOR_KEY, swingBuilder.shortcut("A"))
@@ -133,6 +164,11 @@ c
                         menuItem(action: cutAction)
                         menuItem(action: copyAction)
                         menuItem(action: pasteAction)
+                        separator()
+                        menuItem(action: findAction)
+                        menuItem(action: findNextAction)
+                        menuItem(action: findPreviousAction)
+                        menuItem(action: replaceAction)
                         separator()
                         menuItem(action: selectAllAction)
 
@@ -205,6 +241,26 @@ c
 
     void redo(event) {
         editorPane.redoAction.actionPerformed(event)
+    }
+
+    void find(EventObject evt = null) {
+        FindReplaceUtility.showDialog()
+    }
+
+    void findNext(EventObject evt = null) {
+        FindReplaceUtility.FIND_ACTION.actionPerformed(evt)
+    }
+
+    void findPrevious(EventObject evt = null) {
+        def reverseEvt = new ActionEvent(
+                evt.getSource(), evt.getID(),
+                evt.getActionCommand(), evt.getWhen(),
+                ActionEvent.SHIFT_MASK) //reverse
+        FindReplaceUtility.FIND_ACTION.actionPerformed(reverseEvt)
+    }
+
+    void replace(EventObject evt = null) {
+        FindReplaceUtility.showDialog(true)
     }
 
     void show() {
