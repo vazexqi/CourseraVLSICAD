@@ -67,21 +67,24 @@ c
                 closure: this.&showAbout,
                 mnemonic: 'A',
         )
+    }
+
+    private def createEditorActions(SwingBuilder swingBuilder) {
+
         undoAction = swingBuilder.action(
                 name: 'Undo',
                 closure: this.&undo,
                 mnemonic: 'U',
                 accelerator: swingBuilder.shortcut("Z")
         )
+
         redoAction = swingBuilder.action(
                 name: 'Redo',
                 closure: this.&redo,
                 mnemonic: 'R',
                 accelerator: swingBuilder.shortcut("shift Z")
         )
-    }
 
-    private def createEditorActions(SwingBuilder swingBuilder) {
         def map = new JTextArea().getActionMap() // Get default actions available on all JTextPanes
 
         cutAction = map.get(DefaultEditorKit.cutAction)
