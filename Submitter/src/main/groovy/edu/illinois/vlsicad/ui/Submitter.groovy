@@ -4,14 +4,11 @@ import edu.illinois.vlsicad.core.Answer
 import edu.illinois.vlsicad.core.CourseraHTTPUtils
 import edu.illinois.vlsicad.core.Student
 import groovy.swing.SwingBuilder
+import groovy.ui.ConsoleTextEditor
 
 import javax.swing.*
 import javax.swing.text.DefaultEditorKit
-import javax.swing.text.DefaultStyledDocument
-import javax.swing.undo.*
 import java.awt.*
-
-import groovy.ui.ConsoleTextEditor
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE
 
@@ -22,8 +19,8 @@ class Submitter {
 
     Action loadAction, aboutAction
     Action cutAction, copyAction, pasteAction, selectAllAction // Custom action wrappers for cut/copy/paste that will have better names, bindings, etc
+    Action undoAction, redoAction // Custom action wrappers for undo/redo
 
-    UndoManager undoManager = new UndoManager()
     ConsoleTextEditor editorPane = new ConsoleTextEditor()
 
     Student student
@@ -44,11 +41,17 @@ c
 
         initializeStudent()
 
-        editorPane.textEditor.setDocument(new DefaultStyledDocument()) // Disables any special syntax highlighting
-        
+        setupEditor()
+
         // Create all actions
         createMenuActions(swingBuilder)
         createEditorActions(swingBuilder)
+    }
+
+    private void setupEditor() {
+        editorPane.textEditor.getDocument().setDocumentFilter(null) // No syntax highlighting
+//        swingBuilder.bind(source:editorPane.undoAction, sourceProperty:'enabled', target:undoAction, targetProperty:'enabled')
+//        swingBuilder.bind(source:editorPane.redoAction, sourceProperty:'enabled', target:redoAction, targetProperty:'enabled')
     }
 
     private def createMenuActions(SwingBuilder swingBuilder) {
@@ -61,6 +64,18 @@ c
                 name: 'About',
                 closure: this.&showAbout,
                 mnemonic: 'A',
+        )
+        undoAction = swingBuilder.action(
+                name: 'Undo',
+                closure: this.&undo,
+                mnemonic: 'U',
+                accelerator: swingBuilder.shortcut("Z")
+        )
+        redoAction = swingBuilder.action(
+                name: 'Redo',
+                closure: this.&redo,
+                mnemonic: 'R',
+                accelerator: swingBuilder.shortcut("shift Z")
         )
     }
 
@@ -107,6 +122,9 @@ c
                         menuItem(text: 'Quit', actionPerformed: { event -> dispose() })
                     }
                     menu(text: 'Edit') {
+                        menuItem(action: undoAction)
+                        menuItem(action: redoAction)
+                        separator()
                         menuItem(action: cutAction)
                         menuItem(action: copyAction)
                         menuItem(action: pasteAction)
@@ -174,6 +192,14 @@ c
 
     void showAbout(event) {
 
+    }
+
+    void undo(event) {
+        editorPane.undoAction.actionPerformed(event)
+    }
+
+    void redo(event) {
+        editorPane.redoAction.actionPerformed(event)
     }
 
     void show() {
