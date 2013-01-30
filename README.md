@@ -20,6 +20,10 @@ The Groovy backend for lauching external graders.
 
 Some simple examples of running external processes through Groovy.
 
+### Packager
+
+A simple test script to test that everything has been installed properly.
+
 Development
 -----------
 
