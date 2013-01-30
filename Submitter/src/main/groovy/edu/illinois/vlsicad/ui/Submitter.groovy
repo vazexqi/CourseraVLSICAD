@@ -41,17 +41,19 @@ c
 
         initializeStudent()
 
-        setupEditor()
-
         // Create all actions
         createMenuActions(swingBuilder)
         createEditorActions(swingBuilder)
+
+        // Modify editor settings
+        setupEditor()
     }
 
     private void setupEditor() {
+        // The editor we are using comes from the Groovy console. We want to disable some of its features.
         editorPane.textEditor.getDocument().setDocumentFilter(null) // No syntax highlighting
-//        swingBuilder.bind(source:editorPane.undoAction, sourceProperty:'enabled', target:undoAction, targetProperty:'enabled')
-//        swingBuilder.bind(source:editorPane.redoAction, sourceProperty:'enabled', target:redoAction, targetProperty:'enabled')
+        swingBuilder.bind(source: editorPane.undoAction, sourceProperty: 'enabled', target: undoAction, targetProperty: 'enabled')
+        swingBuilder.bind(source: editorPane.redoAction, sourceProperty: 'enabled', target: redoAction, targetProperty: 'enabled')
     }
 
     private def createMenuActions(SwingBuilder swingBuilder) {
