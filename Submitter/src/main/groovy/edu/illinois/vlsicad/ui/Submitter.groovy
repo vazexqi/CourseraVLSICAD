@@ -164,13 +164,22 @@ c
                         hbox(constraints: BorderLayout.PAGE_END) {
                             hglue()
                             button(text: 'Submit', actionPerformed: {
-                                def submission = CourseraHTTPUtils.getChallenge(student, assignmentPart)
-                                submission.answer = new Answer(answer: editorPane.textEditor.text)
-                                def response = submission.submit()
+                                doOutside {
+                                    // Forks of a new thread to perform this submission
+                                    // See groovy.swing.SwingBuilder#doOutside
+                                    def submissionStudent = student.clone() // To avoid any race conditions with the user changing the values
+                                    def submission = CourseraHTTPUtils.getChallenge(submissionStudent, assignmentPart)
+                                    submission.answer = new Answer(answer: editorPane.textEditor.text)
+                                    def response = submission.submit()
 
-                                def currentTime = new Date().timeString
-                                def currentResult = swingBuilder."results".text
-                                swingBuilder."results".text = currentResult + System.getProperty("line.separator") + currentTime + System.getProperty("line.separator") + response
+                                    def currentTime = new Date().timeString
+                                    def currentResult = swingBuilder."results".text
+                                    edt {
+                                        // All updates must be queued into the event dispatch thread (EDT)
+                                        // See groovy.swing.SwingBuilder#edt
+                                        swingBuilder."results".text = currentResult + System.getProperty("line.separator") + currentTime + System.getProperty("line.separator") + response
+                                    }
+                                }
                             }
                             )
                         }

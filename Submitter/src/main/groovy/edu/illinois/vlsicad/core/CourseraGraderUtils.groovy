@@ -1,6 +1,7 @@
 package edu.illinois.vlsicad.core
 
 import groovy.beans.Bindable
+import groovy.transform.AutoClone
 import groovyx.net.http.HTTPBuilder
 
 import java.security.MessageDigest
@@ -101,8 +102,11 @@ class NullSubmission extends Submission {
  * Represents a student identity for this assignment. The password is assignment specific.
  * Uses the @Bindable annotation to make it easier for updates through the UI.
  * See http://groovy.codehaus.org/Bindable+and+Vetoable+transformation
+ * Uses the @AutoClone annotation to make it easier to clone this simple object
+ * See http://groovy.codehaus.org/api/groovy/transform/AutoClone.html
  */
 @Bindable
+@AutoClone
 class Student {
     String email
     String password
