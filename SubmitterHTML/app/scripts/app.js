@@ -1,13 +1,14 @@
 'use strict';
 
-var SubmitterHTMLApp = angular.module('SubmitterHTMLApp', [])
-  .config(['$routeProvider', function($routeProvider) {
+var SubmitterHTMLApp = angular.module('SubmitterHTMLApp', ['CourseraGraderUtils']);
+
+SubmitterHTMLApp.config(['$routeProvider', function ($routeProvider) {
     $routeProvider
-      .when('/', {
-        templateUrl: 'views/main.html',
-        controller: 'MainCtrl'
-      })
-      .otherwise({
-        redirectTo: '/'
-      });
-  }]);
+        .when('/', {
+            templateUrl: 'views/main.html',
+            controller: 'MainCtrl'
+        })
+        .otherwise({
+            redirectTo: '/'
+        });
+}]);
