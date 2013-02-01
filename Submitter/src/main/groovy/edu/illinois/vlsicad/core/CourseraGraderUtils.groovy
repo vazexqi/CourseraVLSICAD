@@ -82,7 +82,7 @@ class Submission {
     private def respondToChallenge() {
         MessageDigest digest = MessageDigest.getInstance("SHA1")
         digest.update((challenge + student.password).getBytes())
-        return new BigInteger(1, digest.digest()).toString(16)
+        return new BigInteger(1, digest.digest()).toString(16).padLeft(40, '0')
     }
 }
 
