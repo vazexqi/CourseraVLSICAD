@@ -2,6 +2,8 @@
   "author": "",
   "name": "",
   "version": "0.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "grunt-jade": "~0.3.9"
+  },
   "devDependencies": {}
 }
