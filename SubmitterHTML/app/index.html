@@ -43,14 +43,20 @@
 <!-- Add your site or application content here -->
 <div class="container" ng-view></div>
 
+<!--Vendor scripts-->
 <script src="scripts/vendor/angular.js"></script>
 <script src="scripts/vendor/angular-resource.js"></script>
 
-<!-- build:js scripts/scripts.js -->
+<!--Additional scripts that are not packaged in AngularJS style-->
 <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha1.js"></script>
+
+<!--Do not minify AngularJs since that will cause issues with its convention over configuration dependency injection-->
+<!--See https://groups.google.com/d/msg/yeoman-dev/642ocaWEHw8/Q2bN0UTw6sgJ-->
 <script src="scripts/app.js"></script>
 <script src="scripts/CourseraGraderUtils.js"></script>
 <script src="scripts/controllers/main.js"></script>
+
+<!-- build:js scripts/scripts.js -->
 <!-- endbuild -->
 
 </body>
