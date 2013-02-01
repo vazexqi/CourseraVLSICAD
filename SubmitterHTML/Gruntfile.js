@@ -5,10 +5,15 @@ module.exports = function( grunt ) {
   //
   // https://github.com/cowboy/grunt/blob/master/docs/getting_started.md
   //
-  grunt.initConfig({
 
+  grunt.loadNpmTasks('grunt-jade');
+
+  grunt.initConfig({
+  
+    // 
+    // =====================
     // Project configuration
-    // ---------------------
+    // =====================
 
     // specify an alternate install location for Bower
     bower: {
@@ -39,12 +44,27 @@ module.exports = function( grunt ) {
       }
     },
 
+    // compile jade files to html
+    jade: {
+      html: {
+        src: ['app/views/*.jade'],
+        dest: 'app/views',
+        options: {
+          client: false
+        }
+      }
+    },
+
     // generate application cache manifest
     manifest:{
       dest: ''
     },
 
-    // default watch configuration
+    //
+    // ===========================
+    // DEFAULT WATCH CONFIGURATION
+    // ===========================
+    //
     watch: {
       coffee: {
         files: 'app/scripts/**/*.coffee',
@@ -55,6 +75,10 @@ module.exports = function( grunt ) {
           'app/styles/**/*.{scss,sass}'
         ],
         tasks: 'compass reload'
+      },
+      jade: {
+        files: 'app/views/*.jade',
+        tasks: 'jade reload'
       },
       reload: {
         files: [
@@ -174,4 +198,8 @@ module.exports = function( grunt ) {
       done(err);
     });
   });
+
+  // See http://stackoverflow.com/questions/14243245/integrating-jade-in-yeomans-server-watch-reload-tasks
+  grunt.renameTask('server', 'original-server');
+  grunt.registerTask('server', 'jade original-server');
 };
