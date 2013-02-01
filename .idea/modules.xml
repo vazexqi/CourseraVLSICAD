@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/ExternalProcessExamples/ExternalProcessExamples.iml" filepath="$PROJECT_DIR$/ExternalProcessExamples/ExternalProcessExamples.iml" />
       <module fileurl="file://$PROJECT_DIR$/Grader/Grader.iml" filepath="$PROJECT_DIR$/Grader/Grader.iml" />
       <module fileurl="file://$PROJECT_DIR$/Submitter/Submitter.iml" filepath="$PROJECT_DIR$/Submitter/Submitter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SubmitterHTML/SubmitterHTML.iml" filepath="$PROJECT_DIR$/SubmitterHTML/SubmitterHTML.iml" />
     </modules>
   </component>
 </project>
