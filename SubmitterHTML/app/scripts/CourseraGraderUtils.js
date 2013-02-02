@@ -50,7 +50,7 @@ CourseraGraderUtils.factory('Submission', function($resource) {
     };
 
     Submission.prototype.prepareForSubmission = function() {
-        this.challengeResponse = responseToChallenge();
+        this.challengeResponse = respondToChallenge();
         this.answer.encode();
     };
 
@@ -58,6 +58,8 @@ CourseraGraderUtils.factory('Submission', function($resource) {
         var hash = CryptoJS.SHA1(this.challenge + this.student.password);
         return hash.toString(CryptoJS.enc.Hex);
     };
+
+    return Submission;
 
 });
 
