@@ -28,7 +28,7 @@ CourseraGraderUtils.factory('Answer', function() {
     return Answer;
 });
 
-CourseraGraderUtils.factory('Submission', function($resource) {
+CourseraGraderUtils.factory('Submission', function($http) {
     var Submission = function(student, assignmentPart, challenge, challengeAuxillary, challengeResponse, state) {
         this.student = student;
         this.assignmentPart = assignmentPart;
@@ -77,17 +77,36 @@ CourseraGraderUtils.factory('NullSubmission', function() {
 
 });
 
-CourseraGraderUtils.factory('CourseraHTTPUtils', function($resource) {
+CourseraGraderUtils.factory('CourseraHTTPUtils', function($http, NullSubmission, Submission) {
     var utils = {};
 
     // Static variables
-    utils.challengeURL = 'https://class.coursera.org/vlsicad-001/assignment/challenge';
-    utils.submitURL = 'https://class.coursera.org/vlsicad-001/assignment/submit';
+    utils.challengeURL = 'http://localhost:8000/coursera/vlsicad-001/assignment/challenge?';
+    utils.submitURL = 'http://localhost:8000/coursera/vlsicad-001/assignment/submit';
 
-    utils.getChallenge = function(student, assignmentPart) {
-        var http, values, response, text;
+    utils.NullSubmission = NullSubmission;
+    utils.Submission = Submission;
 
+    utils.initiateSubmission = function(student, assignmentPart) {
+        var values, valuesEncoded;
+        values = {'email_address': student.email, 'assignment_part_sid':assignmentPart, 'response_encoding': 'delim'};
+        valuesEncoded = jQuery.param(values);
+        $http.get(utils.challengeURL + valuesEncoded).
+            success(function(data, status, headers, config) {
+                var splits, submission;
 
+                splits = data.split('|');
+                if(splits.length != 9) {
+                    submission = new NullSubmission('Badly formatted challenge response' + data);
+                } else {
+                    submission = new Submission(student, assignmentPart, splits[4], splits[6], splits[8]);
+                }
+                submission.submit();
+            }).
+            error(function(data, status, headers, config) {
+                // This is an error message meaning that we didn't get a HTTP 200 - 300 response
+                console.error("Did not get a response back from Coursera. Please check your connection.");
+            });
     };
 
      return utils;
