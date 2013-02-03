@@ -97,7 +97,7 @@ inputFile.with { file ->
 }
 
 def commandFile = File.createTempFile('commandfile', '.vlsiTemp')
-commandFile.write { file ->
+commandFile.with { file ->
     def gWriter = new GroovyPrintWriter(file)
 
     gWriter.println "read_pla ${inputFile.getAbsolutePath()}"
