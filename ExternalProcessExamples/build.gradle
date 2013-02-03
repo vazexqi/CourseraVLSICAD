@@ -43,3 +43,9 @@ task(runUnixScriptKBDDInteractionsExample, dependsOn: [compileGroovy], type: Jav
     workingDir = new File(project.buildDir, '/resources/main')
     classpath = sourceSets.main.runtimeClasspath
 }
+
+task(runMiniSATExample, dependsOn: [compileGroovy], type: JavaExec) {
+    main = 'edu.illinois.vlsicad.MiniSATExample'
+    workingDir = new File(project.buildDir, '/resources/main')
+    classpath = sourceSets.main.runtimeClasspath
+}
