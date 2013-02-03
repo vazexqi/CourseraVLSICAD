@@ -49,3 +49,9 @@ task(runMiniSATExample, dependsOn: [compileGroovy], type: JavaExec) {
     workingDir = new File(project.buildDir, '/resources/main')
     classpath = sourceSets.main.runtimeClasspath
 }
+
+task(runEspressoExample, dependsOn: [compileGroovy], type: JavaExec) {
+    main = 'edu.illinois.vlsicad.EspressoExample'
+    workingDir = new File(project.buildDir, '/resources/main')
+    classpath = sourceSets.main.runtimeClasspath
+}
