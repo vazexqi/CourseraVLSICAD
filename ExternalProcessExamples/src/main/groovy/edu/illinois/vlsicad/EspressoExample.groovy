@@ -4,9 +4,8 @@ import groovy.io.GroovyPrintWriter
 
 /**
  * This example shows how to capture the output from running espresso. The espresso interface is
- * espresso input_file output_file. Since our input is not in a file format, we create a temporary file
- * to hold its contents and then pipe it to miniSAT. We also need to grab the contents of the output_file
- * since the results (the solution) is not printed to STDOUT/STDERR.
+ * espresso input_file. Since our input is not in a file format, we create a temporary file
+ * to hold its contents and pass it to espresso. We then capture everything on STDERR and STDOUT.
  */
 
 // You might need to change this if miniSAT is not installed in the default locations
