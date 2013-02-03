@@ -10,7 +10,7 @@ import groovy.io.GroovyPrintWriter
  */
 
 // You might need to change this if miniSAT is not installed in the default locations
-def MINISAT_LOCATIION = '/usr/bin/miniSAT'
+def MINISAT_LOCATIION = '/usr/bin/minisat'
 
 def sampleInputString = """
 c Comment line begins by 'c'
