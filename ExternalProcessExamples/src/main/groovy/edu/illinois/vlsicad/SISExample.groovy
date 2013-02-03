@@ -82,6 +82,8 @@ def sampleInputString = """
 111111 1010
 .e
 """
+
+// The easiest way is actually to require two levels of file generation ;-)
 def inputFile = File.createTempFile('inputfile', '.vlsiTmp')
 inputFile.with { file ->
     def gWriter = new GroovyPrintWriter(file)
@@ -94,16 +96,11 @@ inputFile.with { file ->
     file.deleteOnExit()
 }
 
-def sout = new StringBuffer() // To capture the standard output from the process (outputs, etc)
-def serr = new StringBuffer() // To capture the standard error from the process (parsing errors, etc)
+def commandFile = File.createTempFile('commandfile', '.vlsiTemp')
+commandFile.write { file ->
+    def gWriter = new GroovyPrintWriter(file)
 
-Process proc = "${SIS_LOCATION}".execute() // Starts the sis CLI with -q to suppress its verbose welcome message
-
-proc.consumeProcessOutput(sout, serr) // Starts two threads so that standard output and standard err can be captured
-
-proc.withWriter { writer ->
-    def gWriter = new GroovyPrintWriter(writer)
-    gWriter.println "read-pla ${inputFile.getAbsolutePath()}"
+    gWriter.println "read_pla ${inputFile.getAbsolutePath()}"
     gWriter.println "sweep; eliminate -1"
     gWriter.println "simplify -m nocomp"
     gWriter.println "eliminate -1"
@@ -115,7 +112,18 @@ proc.withWriter { writer ->
     gWriter.println "eliminate -1; sweep"
     gWriter.println "full_simplify -m nocomp"
     gWriter.println "print"
+    gWriter.println "quit"
+
+    gWriter.flush()
+    file.deleteOnExit()
 }
+
+def sout = new StringBuffer() // To capture the standard output from the process (outputs, etc)
+def serr = new StringBuffer() // To capture the standard error from the process (parsing errors, etc)
+
+Process proc = "${SIS_LOCATION} -x -f ${commandFile.getAbsolutePath()}".execute() // Starts the sis CLI with -q to suppress its verbose welcome message
+
+proc.consumeProcessOutput(sout, serr) // Starts two threads so that standard output and standard err can be captured
 
 proc.waitForOrKill(20000) // Give it 20000 ms to complete or kill the process
 
