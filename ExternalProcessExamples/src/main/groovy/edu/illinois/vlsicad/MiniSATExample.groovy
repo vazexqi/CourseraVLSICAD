@@ -48,6 +48,6 @@ def results = outputFile.text
 
 println 'Standard out captured from process:\n ' + sout
 println 'Standard err captured from process:\n ' + serr
-println 'Results of miniSAT: ' + results
+println 'Results of miniSAT:\n' + results
 
 
