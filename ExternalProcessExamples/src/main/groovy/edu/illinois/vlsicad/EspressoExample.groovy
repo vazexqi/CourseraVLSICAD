@@ -8,7 +8,7 @@ import groovy.io.GroovyPrintWriter
  * to hold its contents and pass it to espresso. We then capture everything on STDERR and STDOUT.
  */
 
-// You might need to change this if miniSAT is not installed in the default locations
+// You might need to change this if espresso is not installed in the default locations
 def ESPRESSO_LOCATION = '/home/ubuntu/bin/espresso'
 
 def sampleInputString = """
@@ -88,7 +88,7 @@ inputFile.with { file ->
 
     // Populate with contents of the input string
     sampleInputString.eachLine { line ->
-        gWriter.println line
+        gWriter.println line.denormalize()
     }
     gWriter.flush()
     file.deleteOnExit()
@@ -97,11 +97,11 @@ inputFile.with { file ->
 def sout = new StringBuffer() // To capture the standard output from the process (statistics, etc)
 def serr = new StringBuffer() // To capture the standard error from the process (parsing errors, etc)
 
-Process proc = "${ESPRESSO_LOCATION} ${inputFile.getAbsolutePath()}".execute() // Starts the bc CLI with -q to suppress its verbose welcome message
+Process proc = "${ESPRESSO_LOCATION} ${inputFile.getAbsolutePath()}".execute() // Starts the espresso CLI with -q to suppress its verbose welcome message
 
 proc.consumeProcessOutput(sout, serr) // Starts two threads so that standard output and standard err can be captured
 
-proc.waitForOrKill(1000) // Give it 1000 ms to complete or kill the process
+proc.waitForOrKill(20000) // Give it 20000 ms to complete or kill the process
 
 println 'Standard out captured from process:\n ' + sout
 println 'Standard err captured from process:\n ' + serr
