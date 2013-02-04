@@ -5,10 +5,10 @@ import groovy.io.GroovyPrintWriter
 /**
  * This example shows how to capture the output from running sis. The sis interface is
  * a command line prompt. The easiest way to interface with sis is to use a combination of putting stuff
- * into a input file (then using read_pla to read it). And then specifying some commands through STDIN.
+ * into a input file (then using read_pla to read it). And then specifying some (minimal) commands through STDIN.
  */
 
-// You might need to change this if miniSAT is not installed in the default locations
+// You might need to change this if SIS is not installed in the default locations
 def SIS_LOCATION = '/home/ubuntu/bin/sis'
 
 def sampleInputString = """
@@ -96,11 +96,12 @@ inputFile.with { file ->
     file.deleteOnExit()
 }
 
-def commandFile = File.createTempFile('commandfile', '.vlsiTemp')
+def commandFile = File.createTempFile('commandfile', '.vlsiTmp')
 commandFile.with { file ->
     def gWriter = new GroovyPrintWriter(file)
 
     gWriter.println "read_pla ${inputFile.getAbsolutePath()}"
+    // This is the special sequence of SIS command called the "rugged script"
     gWriter.println "sweep; eliminate -1"
     gWriter.println "simplify -m nocomp"
     gWriter.println "eliminate -1"
@@ -129,4 +130,3 @@ proc.waitForOrKill(20000) // Give it 20000 ms to complete or kill the process
 
 println 'Standard out captured from process:\n ' + sout
 println 'Standard err captured from process:\n ' + serr
-
