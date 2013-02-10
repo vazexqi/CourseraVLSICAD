@@ -1,7 +1,5 @@
 package edu.illinois.vlsicad.assignments.bc
 
-import edu.illinois.vlsicad.core.Grader
-
 while (true) {
     def grader = new BCGrader();
     def submission = grader.poll()
