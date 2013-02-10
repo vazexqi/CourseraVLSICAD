@@ -24,7 +24,7 @@ dependencies {
 }
 
 task(bcGrader, dependsOn: [compileGroovy], type: JavaExec) {
-    main = 'edu.illinois.vlsicad.assignments.bc.BCGraderScript'
+    main = 'edu.illinois.vlsicad.assignment.bc.BCGraderScript'
     workingDir = new File(project.buildDir, '/resources/main')
     classpath = sourceSets.main.runtimeClasspath
 }
