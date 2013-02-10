@@ -30,7 +30,7 @@ task(bcGrader, dependsOn: [compileGroovy], type: JavaExec) {
 }
 
 task(kbddGrader, dependsOn: [compileGroovy], type: JavaExec) {
-    main = 'edu.illinois.vlsicad.assignments.bc.KBDDGraderScript'
+    main = 'edu.illinois.vlsicad.assignment.kbdd.KBDDGraderScript'
     workingDir = new File(project.buildDir, '/resources/main')
     classpath = sourceSets.main.runtimeClasspath
 }
