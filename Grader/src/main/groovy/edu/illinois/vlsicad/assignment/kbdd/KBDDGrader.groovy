@@ -43,17 +43,19 @@ class KBDDGrader extends Grader {
             br()
 
             sout.eachLine { line ->
-                p(line)
+                span(line)
+                br()
             }
+
             br()
 
             h4("Standard error")
             br()
 
             serr.eachLine { line ->
-                p(line)
+                span(line)
+                br()
             }
-            br()
         }
 
         return new Grade(score: 1, feedback: writer.toString(), apiState: submission.apiState)
