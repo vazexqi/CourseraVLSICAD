@@ -3,8 +3,8 @@ package edu.illinois.vlsicad.assignment.kbdd
 import edu.illinois.vlsicad.core.Grade
 import edu.illinois.vlsicad.core.Grader
 import edu.illinois.vlsicad.core.Submission
-
 import groovy.io.GroovyPrintWriter
+import groovy.xml.MarkupBuilder
 
 class KBDDGrader extends Grader {
     File inputFile
@@ -36,15 +36,27 @@ class KBDDGrader extends Grader {
         proc.consumeProcessOutput(sout, serr)
         proc.waitForOrKill(20000)
 
-        def feedback = new StringBuilder()
-        feedback << String.format("Standard output%n")
-        feedback << sout.toString()
-        feedback << String.format("%n")
-        feedback << String.format("Standard error%n")
-        feedback << serr.toString()
-        feedback << String.format("%n")
+        def writer = new StringWriter()
+        def markupBuilder = new MarkupBuilder(writer)
+        markupBuilder.div() {
+            h4("Standard output")
+            br()
 
-        return new Grade(score: 1, feedback: feedback as String, apiState: submission.apiState)
+            sout.eachLine { line ->
+                p(line)
+            }
+            br()
+
+            h4("Standard error")
+            br()
+
+            serr.eachLine { line ->
+                p(line)
+            }
+            br()
+        }
+
+        return new Grade(score: 1, feedback: writer.toString(), apiState: submission.apiState)
     }
 
     @Override
