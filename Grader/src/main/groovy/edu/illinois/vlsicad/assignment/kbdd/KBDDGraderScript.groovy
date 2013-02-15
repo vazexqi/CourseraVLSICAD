@@ -8,7 +8,11 @@ while (true) {
         println "No submission. Sleeping for 10 seconds."
         sleep(10000) // Sleep 10 seconds if nothing
     } else {
-        def grade = grader.grade(submission)
-        println grader.post(grade)
+        try {
+            def grade = grader.grade(submission)
+            println grader.post(grade)
+        } catch (Exception e) {
+            e.printStackTrace()
+        }
     }
 }

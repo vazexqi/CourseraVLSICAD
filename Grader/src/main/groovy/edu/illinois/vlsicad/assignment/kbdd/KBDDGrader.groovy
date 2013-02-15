@@ -32,7 +32,7 @@ class KBDDGrader extends Grader {
         def sout = new StringBuilder()
         def serr = new StringBuilder()
 
-        Process proc = new ProcessBuilder("script", "--quiet", "--command", "kbdd ${inputFile.getAbsolutePath()}", "${outputFile.getAbsolutePath()}").start()
+        Process proc = new ProcessBuilder("script", "--quiet", "--command", "${config.kbdd.location} ${inputFile.getAbsolutePath()}", "${outputFile.getAbsolutePath()}").start()
         proc.consumeProcessOutput(sout, serr)
         proc.waitForOrKill(20000)
 
