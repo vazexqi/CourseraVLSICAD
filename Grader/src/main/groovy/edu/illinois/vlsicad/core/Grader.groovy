@@ -1,5 +1,6 @@
 package edu.illinois.vlsicad.core
 
+import groovy.io.GroovyPrintWriter
 import groovyx.net.http.HTTPBuilder
 
 /**
@@ -70,13 +71,34 @@ class Grader {
         def http = new HTTPBuilder(postURL())
         def api = ['x-api-key': config.core.coursera.API]
         def values = ['api_state': grade.apiState,
-                        'score': grade.score,
-                        'feedback': grade.feedback,
-                        'feedback_after_hard_deadline': grade.feedbackAfterHardDeadline,
-                        'feedback_after_soft_close_time': grade.feedbackAfterSoftCloseTime]
-        http.post(headers: api, body:values)
+                'score': grade.score,
+                'feedback': grade.feedback,
+                'feedback_after_hard_deadline': grade.feedbackAfterHardDeadline,
+                'feedback_after_soft_close_time': grade.feedbackAfterSoftCloseTime]
+        http.post(headers: api, body: values)
     }
 
+    /////////////////
+    // HELPER METHODS
+    /////////////////
+
+    File initializeTempFile(String fileName, String contents = null) {
+        File file = File.createTempFile(fileName, '.vlsiTmp')
+        if (contents != null) {
+            def gWriter = new GroovyPrintWriter(file)
+
+            contents.eachLine { line ->
+                gWriter.println line.denormalize()
+            }
+            gWriter.flush()
+        }
+        file.deleteOnExit()
+        return file
+    }
+
+    ///////////////////
+    // SIMPLE CONSTANTS
+    ///////////////////
     def postURL() {
         "https://class.coursera.org/" + config.core.course.session + "/assignment/api/score"
     }

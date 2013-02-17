@@ -10,20 +10,6 @@ class KBDDGrader extends Grader {
     File inputFile
     File outputFile
 
-    File initializeTempFile(String fileName, String contents = null) {
-        File file = File.createTempFile(fileName, '.vlsiTmp')
-        if (contents != null) {
-            def gWriter = new GroovyPrintWriter(file)
-
-            contents.eachLine { line ->
-                gWriter.println line.denormalize()
-            }
-            gWriter.flush()
-        }
-        file.deleteOnExit()
-        return file
-    }
-
     @Override
     def grade(Submission submission) {
         inputFile = initializeTempFile("inputFile", submission.answer.answer)
