@@ -1,4 +1,4 @@
-package edu.illinois.vlsicad.core
+package edu.illinois.vlsicad.core.submission
 
 import groovy.beans.Bindable
 import groovy.transform.AutoClone

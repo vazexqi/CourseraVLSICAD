@@ -1,8 +1,8 @@
 package edu.illinois.vlsicad.ui
 
-import edu.illinois.vlsicad.core.Answer
-import edu.illinois.vlsicad.core.CourseraHTTPUtils
-import edu.illinois.vlsicad.core.Student
+import edu.illinois.vlsicad.core.submission.Answer
+import edu.illinois.vlsicad.core.submission.CourseraHTTPUtils
+import edu.illinois.vlsicad.core.submission.Student
 import groovy.swing.SwingBuilder
 import groovy.ui.ConsoleTextEditor
 
