@@ -150,6 +150,19 @@ class SubmissionMetadata {
         queueID = json.queue_id
         queueHandle = json.queue_handle
     }
+
+    @Override
+    public String toString() {
+        return "SubmissionMetadata{" +
+                "assignmentPartSID='" + assignmentPartSID + '\'' +
+                ", submissionID='" + submissionID + '\'' +
+                ", userID='" + userID + '\'' +
+                ", dequeueTime='" + dequeueTime + '\'' +
+                ", queueName='" + queueName + '\'' +
+                ", queueID='" + queueID + '\'' +
+                ", queueHandle='" + queueHandle + '\'' +
+                '}';
+    }
 }
 
 /**
