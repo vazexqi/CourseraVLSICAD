@@ -21,7 +21,7 @@ class BCGrader extends Grader {
             def rawAnswer = submission.answer.answer
             // Converts the answer (in LR, CR/LF, CR) into one terminated by the platform specific line separator.
             def platformSpecificNewlineAnswer = rawAnswer.denormalize()
-            writer << normalizedAnswer
+            writer << platformSpecificNewlineAnswer
         }
 
         proc.waitForOrKill(20000)

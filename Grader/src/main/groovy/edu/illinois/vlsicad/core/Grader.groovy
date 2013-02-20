@@ -114,18 +114,41 @@ class Grader {
 
 class Submission {
     String apiState
+    String userInfo
     Answer answer // Solutions from the students
-    String submissionTime
+    SubmissionMetadata metadata
 
     Submission(json) {
         def submission = json.submission
 
         apiState = submission.api_state
+        userInfo = submission.user_info
 
         answer = new Answer(answerBase64: submission.submission, additionalDataBase64: submission.submission_aux, solutions: submission.solutions)
         answer.decode()
 
-        submissionTime = submission.submission_metadata.submission_time
+        metadata = new SubmissionMetadata(submission.submission_metadata)
+
+    }
+}
+
+class SubmissionMetadata {
+    String submissionID
+    String assignmentPartSID
+    String userID
+    String dequeueTime
+    String queueName
+    String queueID
+    String queueHandle
+
+    SubmissionMetadata(json) {
+        submissionID = json.submission_id
+        assignmentPartSID = json.assignment_part_sid
+        userID = json.user_id
+        dequeueTime = json.dequeue_time
+        queueName = json.queue_name
+        queueID = json.queue_id
+        queueHandle = json.queue_handle
     }
 }
 
