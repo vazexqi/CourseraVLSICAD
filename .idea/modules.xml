@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/Grader/Grader.iml" filepath="$PROJECT_DIR$/Grader/Grader.iml" />
       <module fileurl="file://$PROJECT_DIR$/Submitter/Submitter.iml" filepath="$PROJECT_DIR$/Submitter/Submitter.iml" />
       <module fileurl="file://$PROJECT_DIR$/SubmitterHTML/SubmitterHTML.iml" filepath="$PROJECT_DIR$/SubmitterHTML/SubmitterHTML.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UnateRecursiveParadigmAssignment/UnateRecursiveParadigmAssignment.iml" filepath="$PROJECT_DIR$/UnateRecursiveParadigmAssignment/UnateRecursiveParadigmAssignment.iml" />
     </modules>
   </component>
 </project>

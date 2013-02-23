@@ -5,9 +5,10 @@
 import edu.illinois.vlsicad.urp.FileFormatChecker
 import edu.illinois.vlsicad.urp.URPException
 
-FileFormatChecker inputChecker = new FileFormatChecker(file: originalInput)
+FileFormatChecker fc = new FileFormatChecker()
+fc.setFile(new File("ValidExample.cubes"))
 try {
-  inputChecker.checkFileFormat()
+  fc.checkFileFormat()
 } catch (URPException urp) {
  // Do stuff
 }
