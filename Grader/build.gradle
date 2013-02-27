@@ -36,7 +36,8 @@ task(kbddGrader, dependsOn: [compileGroovy], type: JavaExec) {
 }
 
 task(packageGrader, dependsOn: [compileGroovy], type: Jar) {
-    archiveName = 'Grader.jar'
+    baseName = 'Grader'
+    version = '1.0.1'
     from sourceSets.main.output.classesDir
     include 'edu/illinois/vlsicad/core/*'
 }
