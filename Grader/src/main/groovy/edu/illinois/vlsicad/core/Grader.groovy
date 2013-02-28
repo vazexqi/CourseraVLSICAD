@@ -124,7 +124,7 @@ class Submission {
 
         apiState = submission.api_state
         userInfo = submission.user_info
-        instructorSolution = submission.solution
+        instructorSolution = submission.solutions
 
         answer = new Answer(answerBase64: submission.submission, additionalDataBase64: submission.submission_aux, solutions: submission.solutions)
         answer.decode()
