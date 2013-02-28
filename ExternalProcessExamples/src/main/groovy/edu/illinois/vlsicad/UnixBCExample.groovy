@@ -12,7 +12,7 @@ def serr = new StringBuffer() // To capture the standard error from the process
 
 Process proc = "bc -q".execute() // Starts the bc CLI with -q to suppress its verbose welcome message
 
-proc.consumeProcessOutput(sout, serr) // Starts two threads so that standard output and standard err can be captured
+proc.waitForProcessOutput(sout, serr) // Starts two threads so that standard output and standard err can be captured
 
 proc.withWriter {writer ->
     def gWriter = new GroovyPrintWriter(writer)

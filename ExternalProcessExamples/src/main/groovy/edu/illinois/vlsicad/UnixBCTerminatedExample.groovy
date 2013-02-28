@@ -14,7 +14,7 @@ def serr = new StringBuffer() // To capture the standard error from the process
 // -l will load the math libraries
 Process proc = "bc -q -l".execute()
 
-proc.consumeProcessOutput(sout, serr) // Starts two threads so that standard output and standard err can be captured
+proc.waitForProcessOutput(sout, serr) // Starts two threads so that standard output and standard err can be captured
 
 proc.withWriter { writer ->
     def gWriter = new GroovyPrintWriter(writer)

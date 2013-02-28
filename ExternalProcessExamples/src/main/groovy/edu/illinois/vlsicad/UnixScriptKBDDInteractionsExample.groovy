@@ -17,7 +17,7 @@ def syserr = new StringBuffer() // To capture the standard error from the proces
 
 Process proc = new ProcessBuilder("script", "--quiet", "--command", "kbdd ${INPUT_FILE}", "${OUTPUT_FILE}").start()
 
-proc.consumeProcessOutput(sysout, syserr) // Starts two threads so that standard output and standard err can be captured
+proc.waitForProcessOutput(sysout, syserr) // Starts two threads so that standard output and standard err can be captured
 
 proc.waitForOrKill(20000) // Give it 20000 ms to complete or kill the process
 

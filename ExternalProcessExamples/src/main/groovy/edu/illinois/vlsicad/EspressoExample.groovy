@@ -99,7 +99,7 @@ def serr = new StringBuffer() // To capture the standard error from the process 
 
 Process proc = "${ESPRESSO_LOCATION} ${inputFile.getAbsolutePath()}".execute() // Starts the espresso CLI with -q to suppress its verbose welcome message
 
-proc.consumeProcessOutput(sout, serr) // Starts two threads so that standard output and standard err can be captured
+proc.waitForProcessOutput(sout, serr) // Starts two threads so that standard output and standard err can be captured
 
 proc.waitForOrKill(20000) // Give it 20000 ms to complete or kill the process
 

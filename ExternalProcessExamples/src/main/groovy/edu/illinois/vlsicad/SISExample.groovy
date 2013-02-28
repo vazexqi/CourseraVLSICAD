@@ -124,7 +124,7 @@ def serr = new StringBuffer() // To capture the standard error from the process 
 
 Process proc = "${SIS_LOCATION} -x -f ${commandFile.getAbsolutePath()}".execute() // Starts the sis CLI with -q to suppress its verbose welcome message
 
-proc.consumeProcessOutput(sout, serr) // Starts two threads so that standard output and standard err can be captured
+proc.waitForProcessOutput(sout, serr) // Starts two threads so that standard output and standard err can be captured
 
 proc.waitForOrKill(20000) // Give it 20000 ms to complete or kill the process
 

@@ -16,7 +16,7 @@ def syserr = new StringBuffer() // To capture the standard error from the proces
 
 Process proc = "script -q ${OUTPUT_FILE} bc -q".execute() // Starts the bc CLI with -q to suppress its verbose welcome message
 
-proc.consumeProcessOutput(sysout, syserr) // Starts two threads so that standard output and standard err can be captured
+proc.waitForProcessOutput(sysout, syserr) // Starts two threads so that standard output and standard err can be captured
 
 proc.withWriter {writer ->
     def gWriter = new GroovyPrintWriter(writer)
