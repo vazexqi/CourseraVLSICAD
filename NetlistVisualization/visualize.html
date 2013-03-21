@@ -54,7 +54,32 @@ google.load('visualization', '1', {packages: ['corechart']});
 
     var files = evt.dataTransfer.files; // FileList object.
 
-    // files is a FileList of File objects. List some properties.
+    // User can drag-n-drop multiple files at once so we pick only the first one.
+    // I don't know of a way to prevent drag-n-drop of multiple files at once.
+
+    var netlist = files[0];
+    var reader = new FileReader();
+    reader.onload = function(event) {
+      var rawText = event.target.result;
+      var lines = rawText.split("\n"); //TODO: Check if this works on non-Unix platforms
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('number', 'X');
+      data.addColumn('number', 'Y');
+
+      var lineIndex, rawLine, splitData;
+      // First two lines are the benchmark name and whether we are doing full or partial placer
+      for(lineIndex = 2; lineIndex < lines.length; lineIndex++) {
+        rawLine = lines[lineIndex]; // e.g., 1 xx.xx yy.yyy
+        splitData = rawLine.split(/\s+/);
+        data.addRow([parseFloat(splitData[1]), parseFloat(splitData[2])]);
+      }
+
+      drawVisualization(data);
+
+    };
+    reader.readAsText(netlist);
+
   }
 
   function handleDragOver(evt) {
@@ -72,15 +97,7 @@ google.load('visualization', '1', {packages: ['corechart']});
 // For visualization
 ////////////////////
 
-  function drawVisualization() {
-    // Create and populate the data table.
-    var data = new google.visualization.DataTable();
-    data.addColumn('number', 'X');
-    data.addColumn('number', 'Shape 1');
-    for (var i = 0; i < 500; i++) {
-      data.addRow([Math.sin(i / 25), Math.cos(i / 10) * 0.5]);
-    }
-
+  function drawVisualization(data) {
     // Create and draw the visualization.
     var chart = new google.visualization.ScatterChart(document.getElementById('visualization'));
     var options =  {
@@ -88,15 +105,13 @@ google.load('visualization', '1', {packages: ['corechart']});
       hAxis: {title: 'X', minValue: 0, maxValue: 100, gridlines: {count:8}},
       vAxis: {title: 'Y', minValue: 0, maxValue: 100, gridlines: {count:8}},
       legend: 'none',
-      populateintSize: 1,
+      pointSize: 1,
       height: 700,
       width: 700,
       tooltip: {trigger: 'none'}
     };
     chart.draw(data, options);
   }
-
-  google.setOnLoadCallback(drawVisualization);
 </script>
 </body>
 </html>
