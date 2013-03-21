@@ -1,0 +1,48 @@
+<!--
+Modified and derived from <https://code.google.com/apis/ajax/playground/?type=visualization#scatter_chart> which is under an Apache 2.0 License
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<title>
+  Visualize Netlist File for Programming Assignment #3
+</title>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript">
+google.load('visualization', '1', {packages: ['corechart']});
+</script>
+
+<script type="text/javascript">
+  function drawVisualization() {
+    // Create and populate the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('number', 'X');
+    data.addColumn('number', 'Shape 1');
+    for (var i = 0; i < 500; i++) {
+      data.addRow([Math.sin(i / 25), Math.cos(i / 10) * 0.5]);
+    }
+
+    // Create and draw the visualization.
+    var chart = new google.visualization.ScatterChart( document.getElementById('visualization'));
+    var options =  {
+      title: 'Distribution of Gates in NetList,
+      hAxis: {title: 'X', minValue: 0, maxValue: 100, gridlines: {count:8}},
+      vAxis: {title: 'Y', minValue: 0, maxValue: 100, gridlines: {count:8}},
+      legend: 'none',
+      populateintSize: 1,
+      height: 700,
+      width: 700,
+      tooltip: {trigger: 'none'}
+    };
+    chart.draw(data, options);
+  }
+
+  google.setOnLoadCallback(drawVisualization);
+</script>
+</head>
+<body>
+<div id="visualization" style="width: 700px; height: 700px;"></div>
+</body>
+</html>
+
