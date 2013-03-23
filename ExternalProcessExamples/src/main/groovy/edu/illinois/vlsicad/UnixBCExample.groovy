@@ -22,7 +22,6 @@ proc.withWriter {writer ->
     writer.println "c"
     writer.println "quit"
 }
-proc.waitForOrKill(1000) // Give it 1000 ms to complete or kill the process
 
 println 'Standard out captured from process: ' + sout
 println 'Standard err captured from process: ' + serr

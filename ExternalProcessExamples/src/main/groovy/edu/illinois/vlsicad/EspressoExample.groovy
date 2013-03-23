@@ -101,8 +101,6 @@ Process proc = "${ESPRESSO_LOCATION} ${inputFile.getAbsolutePath()}".execute() /
 
 proc.waitForProcessOutput(sout, serr) // Starts two threads so that standard output and standard err can be captured
 
-proc.waitForOrKill(20000) // Give it 20000 ms to complete or kill the process
-
 println 'Standard out captured from process:\n ' + sout
 println 'Standard err captured from process:\n ' + serr
 

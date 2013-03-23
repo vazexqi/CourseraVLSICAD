@@ -24,8 +24,6 @@ proc.withWriter {writer ->
         gWriter.println(line)
     }
 }
-proc.waitForOrKill(20000) // Give it 20000 ms to complete or kill the process
-
 println 'Standard out captured from process:\n' + sysout
 println 'Standard err captured from process:\n' + syserr
 

@@ -41,8 +41,6 @@ Process proc = "${MINISAT_LOCATIION} -verb=0 ${inputFile.getAbsolutePath()} ${ou
 
 proc.waitForProcessOutput(sout, serr) // Starts two threads so that standard output and standard err can be captured
 
-proc.waitForOrKill(1000) // Give it 1000 ms to complete or kill the process
-
 // Read the contents of file as a text string
 def results = outputFile.text
 
