@@ -20,7 +20,6 @@ class KBDDGrader extends Grader {
 
         Process proc = new ProcessBuilder("script", "--quiet", "--command", "${config.kbdd.location} ${inputFile.getAbsolutePath()}", "${outputFile.getAbsolutePath()}").start()
         proc.consumeProcessOutput(sout, serr)
-        proc.waitForOrKill(20000)
 
         def writer = new StringWriter()
         def markupBuilder = new MarkupBuilder(writer)

@@ -24,8 +24,6 @@ class BCGrader extends Grader {
             writer << platformSpecificNewlineAnswer
         }
 
-        proc.waitForOrKill(20000)
-
         def feedback = new StringBuilder()
         feedback << "Standard output\n"
         feedback << sout.toString()
