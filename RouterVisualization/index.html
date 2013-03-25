@@ -1,10 +1,94 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <script type="text/javascript" src="d3.v3.js" charset="utf-8"></script>
-  </head>
-  <body>
-    <p>Hello!</p>
-  </body>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+
+<title>
+  Visualize Routes for Programming Assignment #4
+</title>
+<script type="text/javascript" src="d3.v3.js" charset="utf-8"></script>
+
+<style>
+  /* For drag-n-drop */
+  #drop_zone{
+    border:2px dashed #bbb;
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    border-radius:5px;
+    padding:25px;
+    text-align:center;
+    font:20pt bold,"Vollkorn";
+    color:#bbb
+  }
+
+  /* For actual chart */
+  svg {
+      font: 10px sans-serif;
+        padding: 10px;
+  }
+
+  .axis,
+  .frame {
+      shape-rendering: crispEdges;
+  }
+
+  .axis line {
+      stroke: #ddd;
+  }
+
+  .axis path {
+      display: none;
+  }
+
+  .frame {
+      fill: none;
+        stroke: #aaa;
+  }
+</style>
+</head>
+<body>
+<div id="drop_zone">Drop router file here</div>
+
+<script>
+var size = 700, padding = 25;
+
+var x = d3.scale.linear()
+.domain([0,100])
+.range([padding / 2, size - padding / 2]);
+
+var y = d3.scale.linear()
+.domain([0,100])
+.range([size - padding / 2, padding / 2]);
+
+var xAxis = d3.svg.axis()
+.scale(x)
+.orient("bottom")
+.ticks(10)
+.tickSubdivide(true)
+.tickSize(-size);
+
+var yAxis = d3.svg.axis()
+.scale(y)
+.orient("left")
+.ticks(10)
+.tickSubdivide(true)
+.tickSize(-size);
+
+var svg = d3.select("body").append("svg")
+.attr("width", size + padding)
+.attr("height", size + padding)
+.append("g")
+.attr("transform", "translate(" + padding / 2 + "," + padding / 2 + ")");
+
+var xAxisGroup = svg.append("g")
+.attr("class", "x axis")
+.attr("transform", "translate(0," + size + ")")
+.call(xAxis);
+
+var xAxisGroup = svg.append("g")
+.attr("class", "y axis")
+.call(yAxis);
+
+</script>
+</body>
 </html>
 
