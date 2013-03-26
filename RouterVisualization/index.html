@@ -51,53 +51,21 @@
 <script>
 
 // Temporary fake data
-var data = [
-  {x:0, y:0}     ,
-  {x:1, y:0},
-  {x:2, y:0},
-  {x:3, y:0} ,
-  {x:4, y:0},
-  {x:5, y:0},
-  {x:6, y:0} ,
-  {x:7, y:0},
-  {x:8, y:0},
-  {x:9, y:0} ,
-  {x:10, y:0},
-  {x:11, y:0},
-  {x:12, y:0 },
-  {x:12, y:1},
-  {x:12, y:2},
-  {x:12, y:3 },
-  {x:12, y:4},
-  {x:12, y:5},
-  {x:12, y:6 },
-  {x:12, y:7},
-  {x:12, y:8},
-  {x:12, y:9 },
-  {x:12, y:10},
-  {x:12, y:11},
-  {x:12, y:1 2},
-  {x:12, y:13},
-  {x:12, y:14},
-  {x:12, y:1 5},
-  {x:12, y:16},
-  {x:12, y:17}
-  ] ;
 
 var size = 700, padding = 25;
  
 var x = d3.scale.linear()
 .domain([0,100])
- .range([padding / 2, size - padding / 2]);
+.range([padding / 2, size - padding / 2]);
 
 var y = d3.scale.linear()
- .domain([0,100])
+.domain([0,100])
 .range([size - padding / 2, padding / 2]);
 
  var xAxis = d3.svg.axis()
 .scale(x)
 .orient("bottom")
- .ticks(10)
+.ticks(10)
 .tickSubdivide(true)
 .tickSize(-size);
 
@@ -134,18 +102,26 @@ var yShift = d3.scale.linear()
 .domain([0,100])
 .range([size - padding / 2 - cellHeight, padding / 2 - cellHeight]);
 
-svg.selectAll("rect")
-.data(data)
-.enter()
-.append("rect")
-.attr("x", function(d) {
-  return x(d.x)})
-.attr("y", function(d) {
-  return yShift(d.y)})
-.attr("width", function(d) {
-  return cellWidth})
-.attr("height",function(d) {
-  return cellHeight})
+var color = d3.scale.category10();
+
+d3.csv("data.csv", function(error, data) {
+
+  svg.selectAll("rect")
+  .data(data)
+  .enter()
+  .append("rect")
+  .attr("x", function(d) {
+    return x(d.x)})
+  .attr("y", function(d) {
+    return yShift(d.y)})
+  .attr("width", function(d) {
+    return cellWidth})
+  .attr("height", function(d) {
+    return cellHeight})
+  .style("fill", function(d) {
+     return color(d.type)});
+
+});
 
 </script>
 </body>
