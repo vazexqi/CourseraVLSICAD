@@ -2,6 +2,8 @@
 Modified and derived from 
 <https://code.google.com/apis/ajax/playground/?type=visualization#scatter_chart> which is under an Apache 2.0 License
 <http://www.html5rocks.com/en/tutorials/file/dndfiles/#toc-selecting-files-dnd>
+
+Code by the Illinois VLSI CAD teaching staff.
 -->
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -9,7 +11,7 @@ Modified and derived from
 <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 
 <title>
-  Visualize Netlist File for Programming Assignment #3
+  Visualize Placement Result for Programming Assignment #3
 </title>
 
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -33,7 +35,7 @@ google.load('visualization', '1', {packages: ['corechart']});
 
 </head>
 <body>
-<div id="drop_zone">Drop netlist file here</div>
+<div id="drop_zone">Drop placement result file here</div>
 <div id="visualization" style="width: 700px; height: 700px;"></div>
 
 <script type="text/javascript">
@@ -68,8 +70,8 @@ google.load('visualization', '1', {packages: ['corechart']});
       data.addColumn('number', 'Y');
 
       var lineIndex, rawLine, splitData;
-      // First two lines are the benchmark name and whether we are doing full or partial placer
-      for(lineIndex = 2; lineIndex < lines.length; lineIndex++) {
+      // First line (#0) is whether we are doing full or partial placement so we proced to next line (#1)
+      for(lineIndex = 1; lineIndex < lines.length; lineIndex++) {
         rawLine = lines[lineIndex]; // e.g., 1 xx.xx yy.yyy
         splitData = rawLine.split(/\s+/);
         data.addRow([parseFloat(splitData[1]), parseFloat(splitData[2])]);
@@ -101,7 +103,7 @@ google.load('visualization', '1', {packages: ['corechart']});
     // Create and draw the visualization.
     var chart = new google.visualization.ScatterChart(document.getElementById('visualization'));
     var options =  {
-      title: 'Distribution of Gates in NetList',
+      title: 'Placer Results',
       hAxis: {title: 'X', minValue: 0, maxValue: 100, gridlines: {count:8}},
       vAxis: {title: 'Y', minValue: 0, maxValue: 100, gridlines: {count:8}},
       legend: 'none',
