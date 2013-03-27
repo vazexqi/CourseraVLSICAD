@@ -1,15 +1,6 @@
 package edu.illinois.vlsicad.core
 
-import java.io.BufferedInputStream
-import java.io.BufferedOutputStream
-import java.io.BufferedReader
-import java.io.File
-import java.io.IOException
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.io.OutputStream
-import java.io.Writer
-import java.util.List
+import groovy.util.logging.Slf4j
 
 /**
  * This is a version of the TextDumper from
@@ -21,24 +12,30 @@ import java.util.List
  * IOEXception is to be expected since we forcibly terminate streams upon timeout.
  *
  */
+@Slf4j
 class ResilientTextDumper implements Runnable {
-    InputStream inStream
-    Appendable app
+    final static int LIMIT = 20000
+    InputStream inStream;
+    Appendable app;
+    int currentCount
 
     public ResilientTextDumper(InputStream inStream, Appendable app) {
-        this.inStream = inStream
-        this.app = app
+        this.inStream = inStream;
+        this.app = app;
     }
 
     public void run() {
-        InputStreamReader isr = new InputStreamReader(inStream)
-        BufferedReader br = new BufferedReader(isr)
-        String next
+        InputStreamReader isr = new InputStreamReader(inStream);
+        BufferedReader br = new BufferedReader(isr);
+        String next;
         try {
             while ((next = br.readLine()) != null) {
                 if (app != null) {
-                    app.append(next)
-                    app.append("\n")
+                    if (currentCount <= LIMIT) {
+                        app.append(next);
+                        app.append("\n");
+                        currentCount = currentCount + next.length()
+                    }
                 }
             }
         } catch (IOException e) {
