@@ -12,7 +12,6 @@ import groovy.util.logging.Slf4j
  * IOEXception is to be expected since we forcibly terminate streams upon timeout.
  *
  */
-@Slf4j
 class ResilientTextDumper implements Runnable {
     final static int LIMIT = 20000
     InputStream inStream;
