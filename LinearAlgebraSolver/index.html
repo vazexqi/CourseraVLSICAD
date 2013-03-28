@@ -1,0 +1,82 @@
+<div class="alert alert-info">
+<p>
+Fill in the matrix A and the vector b and click "Solve!".
+</p>
+</div>
+<div class="row offset1">
+	<div class="span4">
+		<b>A</b>
+		<br>
+<textarea rows="5" id="matrixA" style="width:250px;">
+1 2
+3 4
+</textarea>
+	</div>
+	<div class="span2">
+		<b>x</b>
+		<br>
+<textarea rows ="5" id="vectorX" style="width:120px;">
+</textarea>
+	</div>
+	<div class="span2">
+		<b>b</b>
+		<br>
+<textarea rows ="5" id="vectorB" style="width:120px;">
+17
+39
+</textarea>
+	</div>
+</div>
+<div class="row offset1">
+	<div class="span8">
+	<p style="text-align:right">
+	  <button class="btn btn-primary" type="button" id="solveButton">Solve!</button>
+	</p>
+        <br>
+        <br>
+        Solver uses the <a href="http://www.numericjs.com/documentation.html">numerical.js</a> library by Sébastien Loisel.
+</div>
+
+
+<!-- Serve this through a https:// or else Chrome will complain -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://spark-public.s3.amazonaws.com/vlsicad/javascript_tools/numeric-1.2.6.min.js"></script>
+<script>
+$('#solveButton').bind('click', solveEquation);
+
+function solveEquation() {
+	var matrixA = matrixToArray($("#matrixA").val());
+	var vectorB = columnToArray($("#vectorB").val());
+	var solution = numeric.solve(matrixA, vectorB);
+	displaySolution(solution);
+	return solution; // For checking in the debugger
+}
+
+function matrixToArray(matrixString) {
+	var rows = matrixString.split("\n");
+	var filteredRows = rows.filter(function(e) { return !isBlank(e) });
+	return filteredRows.map(rowToArray);
+}
+
+function rowToArray(rowString) {
+	return rowString.split(/\s+/).map(parseFloat);
+}
+
+function columnToArray(columnString) {
+	var rows = columnString.split("\n");
+	var filteredRows = rows.filter(function(e) { return !isBlank(e)});
+	return filteredRows.map(parseFloat);
+}
+
+function displaySolution(solutionArray) {
+	var stringToDisplay = "";
+	solutionArray.forEach(function(e) {
+		stringToDisplay += e.toFixed(2) + "\n";
+	});
+	$("#vectorX").val(stringToDisplay);
+}
+
+function isBlank(string) {
+	return (!string || /^\s*$/.test(string));
+}
+</script>
