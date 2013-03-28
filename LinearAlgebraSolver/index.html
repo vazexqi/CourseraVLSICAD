@@ -59,7 +59,7 @@ function matrixToArray(matrixString) {
 }
 
 function rowToArray(rowString) {
-	return rowString.split(/\s+/).map(parseFloat);
+	return rowString.trim().split(/\s+/).map(parseFloat);
 }
 
 function columnToArray(columnString) {
