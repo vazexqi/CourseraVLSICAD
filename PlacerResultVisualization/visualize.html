@@ -41,79 +41,91 @@ google.load('visualization', '1', {packages: ['corechart']});
 
 <script type="text/javascript">
 
-//////////////////
-// For drag-n-drop
-//////////////////
+if (window.File && window.FileReader && window.FileList && window.Blob) {
+  // Great success! All the File APIs are supported.
+} else {
+  alert('The File APIs are not fully supported in this browser. Consider using one from http://www.html5rocks.com/en/features/file_access');
+}
 
-  if (window.File && window.FileReader && window.FileList && window.Blob) {
-    // Great success! All the File APIs are supported.
-  } else {
-    alert('The File APIs are not fully supported in this browser. Consider using one from http://www.html5rocks.com/en/features/file_access');
-  }
+var edu = {
+  illinois: {
+    vlsicad: (function() { 
+      //////////////////
+      // For drag-n-drop
+      //////////////////
 
-  function handleFileSelect(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
+      var handleFileSelect= function(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
 
-    var files = evt.dataTransfer.files; // FileList object.
+        var files = evt.dataTransfer.files; // FileList object.
 
-    // User can drag-n-drop multiple files at once so we pick only the first one.
-    // I don't know of a way to prevent drag-n-drop of multiple files at once.
+        // User can drag-n-drop multiple files at once so we pick only the first one.
+        // I don't know of a way to prevent drag-n-drop of multiple files at once.
 
-    var netlist = files[0];
-    var reader = new FileReader();
-    reader.onload = function(event) {
-      var rawText = event.target.result;
-      var lines = rawText.split("\n"); //TODO: Check if this works on non-Unix platforms
+        var netlist = files[0];
+        var reader = new FileReader();
+        reader.onload = function(event) {
+          var rawText = event.target.result;
+          var lines = rawText.split("\n"); //TODO: Check if this works on non-Unix platforms
 
-      var data = new google.visualization.DataTable();
-      data.addColumn('number', 'X');
-      data.addColumn('number', 'Y');
+          var data = new google.visualization.DataTable();
+          data.addColumn('number', 'X');
+          data.addColumn('number', 'Y');
 
-      var lineIndex, rawLine, splitData;
-      for(lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-        rawLine = lines[lineIndex]; // e.g., 1 xx.xx yy.yyy
-        splitData = rawLine.trim().split(/\s+/);
-        data.addRow([parseFloat(splitData[1]), parseFloat(splitData[2])]);
+          var lineIndex, rawLine, splitData;
+          for(lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+            rawLine = lines[lineIndex]; // e.g., 1 xx.xx yy.yyy
+            splitData = rawLine.trim().split(/\s+/);
+            data.addRow([parseFloat(splitData[1]), parseFloat(splitData[2])]);
+          }
+
+          drawVisualization(data);
+
+        };
+        reader.readAsText(netlist);
+      };
+
+      var handleDragOver = function(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+      };
+
+      ////////////////////
+      // For visualization
+      ////////////////////
+
+      var drawVisualization = function(data) {
+        // Create and draw the visualization.
+        var chart = new google.visualization.ScatterChart(document.getElementById('visualization'));
+        var options =  {
+          title: 'Placer Results',
+          hAxis: {title: 'X', minValue: 0, maxValue: 100, gridlines: {count:8}},
+          vAxis: {title: 'Y', minValue: 0, maxValue: 100, gridlines: {count:8}},
+          legend: 'none',
+          pointSize: 1,
+          height: 700,
+          width: 700,
+          tooltip: {trigger: 'none'}
+        };
+        chart.draw(data, options);
       }
 
-      drawVisualization(data);
+      return {
+        handleDragOver: handleDragOver,
+        handleFileSelect: handleFileSelect
+      };
 
-    };
-    reader.readAsText(netlist);
-
+    })()
   }
-
-  function handleDragOver(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-  }
+};
 
   // Setup the dnd listeners.
   var dropZone = document.getElementById('drop_zone');
-  dropZone.addEventListener('dragover', handleDragOver, false);
-  dropZone.addEventListener('drop', handleFileSelect, false);
+  dropZone.addEventListener('dragover', edu.illinois.vlsicad.handleDragOver, false);
+  dropZone.addEventListener('drop', edu.illinois.vlsicad.handleFileSelect, false);
 
-////////////////////
-// For visualization
-////////////////////
-
-  function drawVisualization(data) {
-    // Create and draw the visualization.
-    var chart = new google.visualization.ScatterChart(document.getElementById('visualization'));
-    var options =  {
-      title: 'Placer Results',
-      hAxis: {title: 'X', minValue: 0, maxValue: 100, gridlines: {count:8}},
-      vAxis: {title: 'Y', minValue: 0, maxValue: 100, gridlines: {count:8}},
-      legend: 'none',
-      pointSize: 1,
-      height: 700,
-      width: 700,
-      tooltip: {trigger: 'none'}
-    };
-    chart.draw(data, options);
-  }
 </script>
 </body>
 </html>
