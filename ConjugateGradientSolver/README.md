@@ -9,8 +9,8 @@ our VLSI CAD: Logic to Layout Coursera course.
 There is no _main_ method but there are several test cases illustrating its
 use.
 
-Assuming that you have Java installed, you can execute `./gradlew test` in the 
-current directory to run the tests. You can then view the results in the 
+Assuming that you have the Java JDK installed, you can execute `./gradlew test`
+in the current directory to run the tests. You can then view the results in the 
 build/reports/test folder.
 
 ### Acknowledgements
