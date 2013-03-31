@@ -46,12 +46,18 @@ public class COOMatrix {
     }
 
     /**
-     * Matrix format
+     * [Sparse] Matrix format
      * n nnz
-     * 1 j1 A[i1,j1]
-     * 2 j2 A[i2,j2]
+     * i1 j1 A[i1,j1]
+     * i2 j2 A[i2,j2]
      * ...
      * ...
+     *
+     * where the coordinates of the matrix are as follows:
+     * [0,0] [0,1] [0,2], ...
+     * [1,0] [1,1] [1,2], ...
+     *
+     * Coordinates without any data are assumed to be 0.0, by default.
      *
      * @param fileName The name of the file that contains the matrix in COO format
      * @return Newly initialized matrix with data from file
