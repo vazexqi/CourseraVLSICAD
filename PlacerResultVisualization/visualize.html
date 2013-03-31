@@ -4,6 +4,7 @@ Modified and derived from
 <http://www.html5rocks.com/en/tutorials/file/dndfiles/#toc-selecting-files-dnd>
 
 Code by the Illinois VLSI CAD teaching staff.
+Released under the University of Illinois/NCSA Open Source License  
 -->
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -70,8 +71,7 @@ google.load('visualization', '1', {packages: ['corechart']});
       data.addColumn('number', 'Y');
 
       var lineIndex, rawLine, splitData;
-      // First line (#0) is whether we are doing full or partial placement so we proced to next line (#1)
-      for(lineIndex = 1; lineIndex < lines.length; lineIndex++) {
+      for(lineIndex = 0; lineIndex < lines.length; lineIndex++) {
         rawLine = lines[lineIndex]; // e.g., 1 xx.xx yy.yyy
         splitData = rawLine.trim().split(/\s+/);
         data.addRow([parseFloat(splitData[1]), parseFloat(splitData[2])]);
