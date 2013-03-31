@@ -167,7 +167,7 @@ public class COOMatrixTest {
         // Assert that we are not creating any new array
         assertEquals("Variables do not reference the same object", result, vector1);
 
-        assertArrayEquals("Added value is not as expected", result, new double[]{-8, 0, 8}, DELTA);
+        assertArrayEquals("Subtracted value is not as expected", result, new double[]{-8, 0, 8}, DELTA);
     }
 
     @Test
