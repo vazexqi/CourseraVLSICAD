@@ -143,36 +143,38 @@ public class COOMatrixTest {
     public void testSolveHuge() {
         double[] b = new double[hugeMatrix.getDim()];
         double[] x = new double[hugeMatrix.getDim()];
-
-        // Set two values of b and leave the rest as 0.0
-        b[0] = 1.0;
-        b[1] = 2.0;
+        Arrays.fill(b, 1.0); // Fill all b's with 1.0
 
         hugeMatrix.solve(b, x);
 
         // Comparing it to the values from the C++ version
 
         double[] expectedPartial = new double[]{
-                0.323568,
-                0.51812,
-                0.122335,
-                0.030585,
-                0.00807145,
-                0.00223629,
-                0.000646228,
-                0.000193474,
-                5.9648e-05,
-                1.88386e-05,
-                6.0692e-06,
-                1.98778e-06,
-                6.60114e-07,
-                2.21811e-07,
-                7.5236e-08,
-                2.57632e-08,
-                8.89172e-09,
-                3.15179e-09,
-                1.05541e-09,
-                2.92601e-10
+                0.421187,
+                0.552967,
+                0.595933,
+                0.610376,
+                0.61534,
+                0.617076,
+                0.61769,
+                0.617909,
+                0.617987,
+                0.618011,
+                0.618011,
+                0.617987,
+                0.617909,
+                0.61769,
+                0.617076,
+                0.61534,
+                0.610376,
+                0.595933,
+                0.552967,
+                0.421187,
+                0.552967,
+                0.747716,
+                0.816322,
+                0.840604,
+                0.849251
         };
 
         for (int i = 0; i < expectedPartial.length; i++) {
