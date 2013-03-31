@@ -11,6 +11,7 @@ import static org.junit.Assert.*;
 public class COOMatrixTest {
     static final double DELTA = 0.01;
     COOMatrix testMatrix;
+    COOMatrix medMatrix;
     COOMatrix hugeMatrix;
 
     @Before
@@ -20,6 +21,7 @@ public class COOMatrixTest {
         // -1.0 4.0 -1.0
         // 0.0 -1.0 4.0
         testMatrix = COOMatrix.readCOOMatrix("mat_test.txt");
+        medMatrix = COOMatrix.readCOOMatrix("mat_psd.txt");
         hugeMatrix = COOMatrix.readCOOMatrix("mat_helmholtz.txt");
     }
 
@@ -79,6 +81,60 @@ public class COOMatrixTest {
         double[] x = new double[testMatrix.getDim()];
         testMatrix.solve(b, x);
         double[] expected = new double[]{-0.4642857139733551, -0.8571428557253853, -0.9642857139733623};
+
+        assertArrayEquals("Solution for x is not as expected", expected, x, DELTA);
+    }
+
+    @Test
+    public void testSolveMed() {
+        double[] b = new double[]{
+                3.23,
+                28.53,
+                28.15,
+                79.51,
+                27.84,
+                42.26,
+                38.75,
+                54.68,
+                62.47,
+                14.31,
+                56.43,
+                18.38,
+                46.48,
+                15.20,
+                70.18,
+                65.64,
+                43.22,
+                97.30,
+                57.36,
+                71.74
+        };
+
+        double[] x = new double[medMatrix.getDim()];
+        medMatrix.solve(b, x);
+
+        double[] expected = new double[]{
+                24.927,
+                37.688,
+                37.160,
+                76.675,
+                36.682,
+                48.829,
+                42.369,
+                43.422,
+                44.282,
+                37.542,
+                53.145,
+                31.743,
+                43.985,
+                36.658,
+                49.680,
+                53.243,
+                41.794,
+                67.126,
+                50.374,
+                62.277
+        };
 
         assertArrayEquals("Solution for x is not as expected", expected, x, DELTA);
     }
