@@ -37,59 +37,62 @@ Fill in the matrix A and the vector b and click "Solve!".
         Solver uses the <a href="http://www.numericjs.com/documentation.html">numerical.js</a> library by Sebastien Loisel.
 </div>
 
-
 <!-- Serve this through a https:// or else Chrome will complain -->
+<!-- Ideally, I don't want to load jQuery since Coursera has its own version. However, Coursera chooses to load its script at the end so $(...) isn't available when we need it. -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://spark-public.s3.amazonaws.com/vlsicad/javascript_tools/numeric-1.2.6.min.js"></script>
 <script>
 
 // Create namespace to be safe - don't want any collisions with Coursera's code
-var illinois = {};
-illinois.vlsi = (function() {
-	var solveEquation = function() {
-		var matrixA = matrixToArray($("#matrixA").val());
-		var vectorB = columnToArray($("#vectorB").val());
-		var solution = numeric.solve(matrixA, vectorB);
-		displaySolution(solution);
-		return solution; // For checking in the debugger
-	}
+var edu = {
+	illinois: {
+		vlsicad: (function() {
+			var solveEquation = function() {
+				var matrixA = matrixToArray($("#matrixA").val());
+				var vectorB = columnToArray($("#vectorB").val());
+				var solution = numeric.solve(matrixA, vectorB);
+				displaySolution(solution);
+				return solution; // For checking in the debugger
+			}
 
-	var matrixToArray = function(matrixString) {
-		var rows = matrixString.split("\n");
-		var filteredRows = rows.filter(function(e) { return !isBlank(e) });
-		return filteredRows.map(rowToArray);
-	}
+			var matrixToArray = function(matrixString) {
+				var rows = matrixString.split("\n");
+				var filteredRows = rows.filter(function(e) { return !isBlank(e) });
+				return filteredRows.map(rowToArray);
+			}
 
-	var rowToArray = function(rowString) {
-		return rowString.split(/\s+/).map(parseFloat);
-	}
+			var rowToArray = function(rowString) {
+				return rowString.split(/\s+/).map(parseFloat);
+			}
 
-	var columnToArray = function(columnString) {
-		var rows = columnString.split("\n");
-		var filteredRows = rows.filter(function(e) { return !isBlank(e)});
-		return filteredRows.map(parseFloat);
-	}
+			var columnToArray = function(columnString) {
+				var rows = columnString.split("\n");
+				var filteredRows = rows.filter(function(e) { return !isBlank(e)});
+				return filteredRows.map(parseFloat);
+			}
 
-	var displaySolution = function(solutionArray) {
-		var stringToDisplay = "";
-		solutionArray.forEach(function(e) {
-			stringToDisplay += e.toFixed(2) + "\n";
-		});
-		$("#vectorX").val(stringToDisplay);
-	}
+			var displaySolution = function(solutionArray) {
+				var stringToDisplay = "";
+				solutionArray.forEach(function(e) {
+					stringToDisplay += e.toFixed(2) + "\n";
+				});
+				$("#vectorX").val(stringToDisplay);
+			}
 
-	var isBlank = function(string) {
-		return (!string || /^\s*$/.test(string));
+			var isBlank = function(string) {
+				return (!string || /^\s*$/.test(string));
+			}
+
+			// Only expose the solveEquation function
+			return {
+				solveEquation: solveEquation
+			};
+		})()
 	}
-	
-	// Only expose the solveEquation function
-	return {
-		solveEquation: solveEquation
-	};
-})();
+}
 
 $(document).ready(function() {
-	$('#solveButton').bind('click', illinois.vlsi.solveEquation);
+	$('#solveButton').bind('click', edu.illinois.vlsicad.solveEquation);
 });
 
 </script>
