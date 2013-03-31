@@ -54,23 +54,23 @@ var edu = {
 				var solution = numeric.solve(matrixA, vectorB);
 				displaySolution(solution);
 				return solution; // For checking in the debugger
-			}
+			};
 
 			var matrixToArray = function(matrixString) {
 				var rows = matrixString.split("\n");
 				var filteredRows = rows.filter(function(e) { return !isBlank(e) });
 				return filteredRows.map(rowToArray);
-			}
+			};
 
 			var rowToArray = function(rowString) {
 				return rowString.split(/\s+/).map(parseFloat);
-			}
+			};
 
 			var columnToArray = function(columnString) {
 				var rows = columnString.split("\n");
 				var filteredRows = rows.filter(function(e) { return !isBlank(e)});
 				return filteredRows.map(parseFloat);
-			}
+			};
 
 			var displaySolution = function(solutionArray) {
 				var stringToDisplay = "";
@@ -78,11 +78,11 @@ var edu = {
 					stringToDisplay += e.toFixed(2) + "\n";
 				});
 				$("#vectorX").val(stringToDisplay);
-			}
+			};
 
 			var isBlank = function(string) {
 				return (!string || /^\s*$/.test(string));
-			}
+			};
 
 			// Only expose the solveEquation function
 			return {
@@ -90,7 +90,7 @@ var edu = {
 			};
 		})()
 	}
-}
+};
 
 $(function() {
 	$('#solveButton').bind('click', edu.illinois.vlsicad.solveEquation);
