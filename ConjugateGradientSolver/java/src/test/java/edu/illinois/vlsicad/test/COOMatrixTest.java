@@ -21,7 +21,7 @@ public class COOMatrixTest {
         // -1.0 4.0 -1.0
         // 0.0 -1.0 4.0
         testMatrix = COOMatrix.readCOOMatrix("mat_test.txt");
-        medMatrix = COOMatrix.readCOOMatrix("mat_psd.txt");
+        medMatrix = COOMatrix.readCOOMatrix("psd.txt");
         hugeMatrix = COOMatrix.readCOOMatrix("mat_helmholtz.txt");
     }
 

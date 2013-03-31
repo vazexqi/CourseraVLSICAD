@@ -20,6 +20,6 @@ dependencies {
 }
 
 test {
-    workingDir = new File(project.buildDir, '/resources/test')
+    workingDir = new File('../data')
 }
 
