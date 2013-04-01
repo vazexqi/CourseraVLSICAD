@@ -3,6 +3,7 @@ package edu.illinois.vlsicad;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -81,15 +82,14 @@ public class COOMatrix {
     }
 
     /**
-     * Multiplies the data in this matrix with the data in vector
-     * <p/>
-     * You might want to change this to operate in place if the performance is not acceptable
-     *
-     * @param vector The vector to multiply - check that you have the right dimensions!
-     * @return The result of the multiplication
+     * Multiplies the matrix with a vector
+     * @param vector The vector containing the values to multiply our matrix with
+     * @param result The vector to store the result - done in place
+     * @return The reference to the result (mostly for convenience)
      */
-    public double[] multiplyWithVector(double[] vector) {
-        double[] result = new double[vector.length];
+    public double[] multiplyWithVector(double[] vector, double[] result) {
+        // Reset result vector
+        Arrays.fill(result, 0.0);
 
         for (int index = 0; index < nnz; index++) {
             result[row[index]] += data[index] * vector[col[index]];
@@ -105,8 +105,8 @@ public class COOMatrix {
      * @param x the x vector in a typical linear equation
      */
     public void solve(double[] b, double[] x) {
-        double[] Ax;
-        double[] Ap;
+        double[] Ax = new double[dim];
+        double[] Ap = new double[dim];
         double[] r;
         double[] p;
 
@@ -114,14 +114,14 @@ public class COOMatrix {
         double error, errorOld = 1.0;
 
         populateVectorWithRandomNumbers(x);
-        Ax = multiplyWithVector(x);
+        Ax = multiplyWithVector(x,Ax);
         r = COOMatrix.subtract(b, Ax);
         p = copyOf(r);
         rnormOld = COOMatrix.dot(r, r);
 
         int iteration;
         for (iteration = 0; iteration < MAX_ITERATION; iteration++) {
-            Ap = multiplyWithVector(p);
+            Ap = multiplyWithVector(p, Ap);
             alpha = rnormOld / COOMatrix.dot(p, Ap);
 
             COOMatrix.multiplyWith(p, alpha);

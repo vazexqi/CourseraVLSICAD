@@ -73,7 +73,8 @@ public class COOMatrixTest {
 
     @Test
     public void testMultiplyWithVector() {
-        double[] result = testMatrix.multiplyWithVector(new double[]{1, 2, 3});
+        double[] result = new double[testMatrix.getDim()];
+        result = testMatrix.multiplyWithVector(new double[]{1, 2, 3}, result);
         double[] expected = {2.0, 4.0, 10.0};
         assertTrue("Result of matrix vector multiplication not as expected", Arrays.equals(expected, result));
     }
