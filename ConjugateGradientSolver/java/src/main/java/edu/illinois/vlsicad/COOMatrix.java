@@ -31,13 +31,13 @@ public class COOMatrix {
 
     final int dim; // The dimensions of the square matrix
     final int nnz; // The rows of the sparse representation
-    final int[] row;
-    final int[] col;
-    final double[] data;
 
-    // All initialization should happen through the static method that reads from file
-    // BUT you can change this as necessary to suit your code
-    private COOMatrix(int dim, int nnz) {
+
+    int[] row;
+    int[] col;
+    double[] data;
+
+    public COOMatrix(int dim, int nnz) {
         this.dim = dim;
         this.nnz = nnz;
         this.row = new int[nnz];
@@ -52,11 +52,11 @@ public class COOMatrix {
      * i2 j2 A[i2,j2]
      * ...
      * ...
-     *
+     * <p/>
      * where the coordinates of the matrix are as follows:
      * [0,0] [0,1] [0,2], ...
      * [1,0] [1,1] [1,2], ...
-     *
+     * <p/>
      * Coordinates without any data are assumed to be 0.0, by default.
      *
      * @param fileName The name of the file that contains the matrix in COO format
@@ -82,7 +82,7 @@ public class COOMatrix {
 
     /**
      * Multiplies the data in this matrix with the data in vector
-     *
+     * <p/>
      * You might want to change this to operate in place if the performance is not acceptable
      *
      * @param vector The vector to multiply - check that you have the right dimensions!
@@ -253,8 +253,6 @@ public class COOMatrix {
         return sb.toString();
     }
 
-    // These getters are mostly for testing purposes so that we can assert certain properties
-    // You can use them to access some values of the matrix
     public int[] getCol() {
         return col;
     }
@@ -273,5 +271,17 @@ public class COOMatrix {
 
     public int[] getRow() {
         return row;
+    }
+
+    public void setRow(int[] row) {
+        this.row = row;
+    }
+
+    public void setCol(int[] col) {
+        this.col = col;
+    }
+
+    public void setData(double[] data) {
+        this.data = data;
     }
 }

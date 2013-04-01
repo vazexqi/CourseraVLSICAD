@@ -16,11 +16,24 @@ public class COOMatrixTest {
 
     @Before
     public void setUp() throws Exception {
-        // This is what the actual 3x3 matrix looks like
+        // This is what the actual mat_test 3x3 matrix looks like
         // 4.0 -1.0 0.0
         // -1.0 4.0 -1.0
         // 0.0 -1.0 4.0
-        testMatrix = COOMatrix.readCOOMatrix("mat_test.txt");
+
+        // This is how you would read it in from file
+        // testMatrix = COOMatrix.readCOOMatrix("mat_test.txt");
+
+        // This is how you might construct it programmatically
+        int[] rows = new int[]{0, 0, 1, 1, 1, 2, 2};
+        int[] cols = new int[]{0, 1, 0, 1, 2, 1, 2};
+        double[] data = new double[]{4.0, -1.0, -1.0, 4.0, -1.0, -1.0, 4.0};
+        testMatrix = new COOMatrix(3, data.length);
+        testMatrix.setRow(rows);
+        testMatrix.setCol(cols);
+        testMatrix.setData(data);
+
+
         medMatrix = COOMatrix.readCOOMatrix("psd.txt");
         hugeMatrix = COOMatrix.readCOOMatrix("mat_helmholtz.txt");
     }
