@@ -5,31 +5,36 @@ Fill in the matrix A and the vector b and click "Solve!".
 </div>
 <div class="row offset1">
 	<div class="span4">
-		<b>A</b>
+		<b>Input matrix A</b>
 		<br>
 <textarea rows="5" id="matrixA" style="width:250px;">
 1 2
 3 4
 </textarea>
 	</div>
-	<div class="span2">
-		<b>x</b>
+</div>
+<div class="row offset1">
+	<div class="span4">
+		<b>Input vector b</b>
 		<br>
-<textarea readonly rows ="5" id="vectorX" style="width:120px;">
-</textarea>
-	</div>
-	<div class="span2">
-		<b>b</b>
-		<br>
-<textarea rows ="5" id="vectorB" style="width:120px;">
+<textarea rows ="5" id="vectorB" style="width:250px;">
 17
 39
 </textarea>
 	</div>
 </div>
 <div class="row offset1">
-	<div class="span8">
-	<p style="text-align:right">
+	<div class="span4">
+		<b>Solution vector x</b>
+		<br>
+<textarea readonly rows ="5" id="vectorX" style="width:250px;">
+</textarea>
+	</div>
+</div>
+
+<div class="row offset1">
+	<div class="span4">
+	<p>
 	  <button class="btn btn-primary" type="button" id="solveButton">Solve!</button>
 	</p>
         <br>
@@ -54,23 +59,23 @@ var edu = {
 				var solution = numeric.solve(matrixA, vectorB);
 				displaySolution(solution);
 				return solution; // For checking in the debugger
-			};
+			}
 
 			var matrixToArray = function(matrixString) {
 				var rows = matrixString.split("\n");
 				var filteredRows = rows.filter(function(e) { return !isBlank(e) });
 				return filteredRows.map(rowToArray);
-			};
+			}
 
 			var rowToArray = function(rowString) {
 				return rowString.split(/\s+/).map(parseFloat);
-			};
+			}
 
 			var columnToArray = function(columnString) {
 				var rows = columnString.split("\n");
 				var filteredRows = rows.filter(function(e) { return !isBlank(e)});
 				return filteredRows.map(parseFloat);
-			};
+			}
 
 			var displaySolution = function(solutionArray) {
 				var stringToDisplay = "";
@@ -78,11 +83,11 @@ var edu = {
 					stringToDisplay += e.toFixed(2) + "\n";
 				});
 				$("#vectorX").val(stringToDisplay);
-			};
+			}
 
 			var isBlank = function(string) {
 				return (!string || /^\s*$/.test(string));
-			};
+			}
 
 			// Only expose the solveEquation function
 			return {
@@ -90,7 +95,7 @@ var edu = {
 			};
 		})()
 	}
-};
+}
 
 $(function() {
 	$('#solveButton').bind('click', edu.illinois.vlsicad.solveEquation);
