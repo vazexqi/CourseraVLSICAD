@@ -72,12 +72,17 @@ var edu = {
           var data = new google.visualization.DataTable();
           data.addColumn('number', 'X');
           data.addColumn('number', 'Y');
+          data.addColumn({type: 'string', role: 'tooltip'});
 
           var lineIndex, rawLine, splitData;
+          var id, x, y;
           for(lineIndex = 0; lineIndex < lines.length; lineIndex++) {
             rawLine = lines[lineIndex]; // e.g., 1 xx.xx yy.yyy
             splitData = rawLine.trim().split(/\s+/);
-            data.addRow([parseFloat(splitData[1]), parseFloat(splitData[2])]);
+            id = parseInt(splitData[0]);
+            x = parseFloat(splitData[1]);
+            y = parseFloat(splitData[2]);
+            data.addRow([x, y, constructTooltip(id, x, y)]);
           }
 
           drawVisualization(data);
@@ -96,6 +101,10 @@ var edu = {
       // For visualization
       ////////////////////
 
+      var constructTooltip = function(id, x, y) {
+        return "Gate " + id + " : (" + x + ", " + y + ")";
+      };
+
       var drawVisualization = function(data) {
         // Create and draw the visualization.
         var chart = new google.visualization.ScatterChart(document.getElementById('visualization'));
@@ -106,8 +115,7 @@ var edu = {
           legend: 'none',
           pointSize: 1,
           height: 700,
-          width: 700,
-          tooltip: {trigger: 'none'}
+          width: 700
         };
         chart.draw(data, options);
       };
