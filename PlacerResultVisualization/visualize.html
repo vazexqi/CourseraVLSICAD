@@ -15,10 +15,7 @@ Released under the University of Illinois/NCSA Open Source License
   Visualize Placement Result for Programming Assignment #3
 </title>
 
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-<script type="text/javascript">
-google.load('visualization', '1', {packages: ['corechart']});
-</script>
+<script type="text/javascript" src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 
 <style>
   #drop_zone{
@@ -31,13 +28,36 @@ google.load('visualization', '1', {packages: ['corechart']});
     font:20pt bold,"Vollkorn";
     color:#bbb
   }
+
+  /* For actual chart */
+  svg {
+      font: 10px sans-serif;
+      padding: 10px;
+  }
+
+  .axis,
+  .frame {
+      shape-rendering: crispEdges;
+  }
+
+  .axis line {
+      stroke: #ddd;
+  }
+
+  .axis path {
+      display: none;
+  }
+
+  .frame {
+      fill: none;
+        stroke: #aaa;
+  }
 </style>
 
 
 </head>
 <body>
 <div id="drop_zone">Drop placement result file here</div>
-<div id="visualization" style="width: 700px; height: 700px;"></div>
 
 <script type="text/javascript">
 
@@ -67,22 +87,21 @@ var edu = {
         var reader = new FileReader();
         reader.onload = function(event) {
           var rawText = event.target.result;
-          var lines = rawText.split("\n"); //TODO: Check if this works on non-Unix platforms
+          var lines = rawText.split("\n");
 
-          var data = new google.visualization.DataTable();
-          data.addColumn('number', 'X');
-          data.addColumn('number', 'Y');
-          data.addColumn({type: 'string', role: 'tooltip'});
+          var data = [];
 
           var lineIndex, rawLine, splitData;
           var id, x, y;
           for(lineIndex = 0; lineIndex < lines.length; lineIndex++) {
             rawLine = lines[lineIndex]; // e.g., 1 xx.xx yy.yyy
-            splitData = rawLine.trim().split(/\s+/);
-            id = parseInt(splitData[0]);
-            x = parseFloat(splitData[1]);
-            y = parseFloat(splitData[2]);
-            data.addRow([x, y, constructTooltip(id, x, y)]);
+            if(!isBlank(rawLine)) {
+              splitData = rawLine.trim().split(/\s+/);
+              id = parseInt(splitData[0]);
+              x = parseFloat(splitData[1]);
+              y = parseFloat(splitData[2]);
+              data.push({id: id, x: x, y: y}); // Construct a new object on the fly and add it 
+            }
           }
 
           drawVisualization(data);
@@ -90,6 +109,10 @@ var edu = {
         };
         reader.readAsText(netlist);
       };
+
+			var isBlank = function(string) {
+				return (!string || /^\s*$/.test(string));
+			}
 
       var handleDragOver = function(evt) {
         evt.stopPropagation();
@@ -101,31 +124,66 @@ var edu = {
       // For visualization
       ////////////////////
 
-      var constructTooltip = function(id, x, y) {
-        return "Gate " + id + " : (" + x + ", " + y + ")";
-      };
+      var size = 700, padding = 25;
 
-      var drawVisualization = function(data) {
-        // Create and draw the visualization.
-        var chart = new google.visualization.ScatterChart(document.getElementById('visualization'));
-        var options =  {
-          title: 'Placer Results',
-          hAxis: {title: 'X', minValue: 0, maxValue: 100, viewWindowMode: 'explicit', viewWindow: {min: 0, max: 100}, gridlines: {count:9}},
-          vAxis: {title: 'Y', minValue: 0, maxValue: 100, viewWindowMode: 'explicit', viewWindow: {min: 0, max: 100}, gridlines: {count:9}},
-          legend: 'none',
-          pointSize: 1,
-          height: 700,
-          width: 700
+      var x = d3.scale.linear()
+      .domain([0,100])
+      .range([padding / 2, size - padding / 2]);
+
+      var y = d3.scale.linear()
+      .domain([0,100])
+      .range([size - padding / 2, padding / 2]);
+
+       var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient("bottom")
+      .tickValues([0, 12.5, 25, 37.5, 50, 62.5, 75, 87.5, 100])
+      .tickSize(-size);
+
+      var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient("left")
+      .tickValues([0, 12.5, 25, 37.5, 50, 62.5, 75, 87.5, 100])
+      .tickSize(-size);
+
+      var svg = d3.select("body").append("svg")
+      .attr("width", size + padding)
+      .attr("height", size + padding)
+      .append("g")
+      .attr("transform", "translate(" + padding / 2 + "," + padding / 2 + ")");
+
+      var xAxisGroup = svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + size + ")")
+      .call(xAxis);
+
+      var xAxisGroup = svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
+
+      function drawVisualization(data) {
+        // Clear all previous nodes
+        svg.selectAll("circle").remove();
+
+        // Populate with new data
+        svg.selectAll("circle")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("cx", function(d) {
+          return x(d.x)})
+        .attr("cy", function(d) {
+          return y(d.y)})
+        .attr("r", 2)
+        .style("fill", d3.rgb("#3366cc"));
+      }
+
+        return {
+          handleDragOver: handleDragOver,
+          handleFileSelect: handleFileSelect
         };
-        chart.draw(data, options);
-      };
 
-      return {
-        handleDragOver: handleDragOver,
-        handleFileSelect: handleFileSelect
-      };
-
-    })()
+      })()
   }
 };
 
