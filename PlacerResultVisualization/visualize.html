@@ -1,10 +1,10 @@
 <!--
-Modified and derived from 
+Modified and derived from
 <https://code.google.com/apis/ajax/playground/?type=visualization#scatter_chart> which is under an Apache 2.0 License
 <http://www.html5rocks.com/en/tutorials/file/dndfiles/#toc-selecting-files-dnd>
 
 Code by the Illinois VLSI CAD teaching staff.
-Released under the University of Illinois/NCSA Open Source License  
+Released under the University of Illinois/NCSA Open Source License
 -->
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -52,6 +52,20 @@ Released under the University of Illinois/NCSA Open Source License
       fill: none;
         stroke: #aaa;
   }
+
+  /* For tooltip */
+  div.tooltip {
+    position: absolute;
+    text-align: center;
+    width: 200px;
+    height: 12px;
+    padding: 8px;
+    font: 10px sans-serif;
+    background: #ddd;
+    border: solid 1px #aaa;
+    border-radius: 5px;
+    pointer-events: none;
+  }
 </style>
 
 
@@ -69,7 +83,7 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 
 var edu = {
   illinois: {
-    vlsicad: (function() { 
+    vlsicad: (function() {
       //////////////////
       // For drag-n-drop
       //////////////////
@@ -100,7 +114,7 @@ var edu = {
               id = parseInt(splitData[0]);
               x = parseFloat(splitData[1]);
               y = parseFloat(splitData[2]);
-              data.push({id: id, x: x, y: y}); // Construct a new object on the fly and add it 
+              data.push({id: id, x: x, y: y}); // Construct a new object on the fly and add it
             }
           }
 
@@ -161,6 +175,10 @@ var edu = {
       .attr("class", "y axis")
       .call(yAxis);
 
+      var div = d3.select("body").append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
       function drawVisualization(data) {
         // Clear all previous nodes
         svg.selectAll("circle").remove();
@@ -175,7 +193,21 @@ var edu = {
         .attr("cy", function(d) {
           return y(d.y)})
         .attr("r", 2)
-        .style("fill", d3.rgb("#3366cc"));
+        .style("fill", d3.rgb("#3366cc"))
+        .on("mouseover", function(d) {
+          div.transition()
+          .duration(50)
+          .style("opacity", .9);
+
+          div.html("Gate " + d.id + " : (" + d.x + ", " + d.y + ")")
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+        })
+        .on("mouseout", function(d) {
+          div.transition()
+          .duration(100)
+          .style("opacity", 0);
+        });
       }
 
         return {
