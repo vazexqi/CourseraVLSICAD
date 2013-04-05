@@ -110,8 +110,8 @@ var edu = {
         var chart = new google.visualization.ScatterChart(document.getElementById('visualization'));
         var options =  {
           title: 'Placer Results',
-          hAxis: {title: 'X', minValue: 0, maxValue: 100, gridlines: {count:8}},
-          vAxis: {title: 'Y', minValue: 0, maxValue: 100, gridlines: {count:8}},
+          hAxis: {title: 'X', minValue: 0, maxValue: 100, viewWindowMode: 'explicit', viewWindow: {min: 0, max: 100}, gridlines: {count:9}},
+          vAxis: {title: 'Y', minValue: 0, maxValue: 100, viewWindowMode: 'explicit', viewWindow: {min: 0, max: 100}, gridlines: {count:9}},
           legend: 'none',
           pointSize: 1,
           height: 700,
