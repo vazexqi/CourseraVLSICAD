@@ -119,35 +119,34 @@ var yAxis = d3.svg.axis()
 .tickSubdivide(true)
 .tickSize(-size);
 
-var svg = d3.select("body").append("svg")
-.attr("width", size + padding)
-.attr("height", size + padding)
-.append("g")
-.attr("transform", "translate(" + padding / 2 + "," + padding / 2 + ")");
-
-var xAxisGroup = svg.append("g")
-.attr("class", "x axis")
-.attr("transform", "translate(0," + size + ")")
-.call(xAxis);
-
-var xAxisGroup = svg.append("g")
-.attr("class", "y axis")
-.call(yAxis);
-
-// Use the scale to calculate the width and height for one cell
-// i.e., the difference between two points
-var cellWidth = Math.abs(x(1) - x(0)),
-    cellHeight = Math.abs(y(0) - y(1));
-
-// Need to shift the y-axis by cellHeight so that (0,0) is within the cell
-// Recall that the position of rect is determined by its top left corner
-var yShift = d3.scale.linear()
-.domain([0,100])
-.range([size - padding / 2 - cellHeight, padding / 2 - cellHeight]);
-
-var color = d3.scale.category10();
-
 function drawVisualization(data) {
+  var svg = d3.select("body").append("svg")
+  .attr("width", size + padding)
+  .attr("height", size + padding)
+  .append("g")
+  .attr("transform", "translate(" + padding / 2 + "," + padding / 2 + ")");
+
+  var xAxisGroup = svg.append("g")
+  .attr("class", "x axis")
+  .attr("transform", "translate(0," + size + ")")
+  .call(xAxis);
+
+  var xAxisGroup = svg.append("g")
+  .attr("class", "y axis")
+  .call(yAxis);
+
+  // Use the scale to calculate the width and height for one cell
+  // i.e., the difference between two points
+  var cellWidth = Math.abs(x(1) - x(0)),
+  cellHeight = Math.abs(y(0) - y(1));
+
+  // Need to shift the y-axis by cellHeight so that (0,0) is within the cell
+  // Recall that the position of rect is determined by its top left corner
+  var yShift = d3.scale.linear()
+  .domain([0,100])
+  .range([size - padding / 2 - cellHeight, padding / 2 - cellHeight]);
+
+  var color = d3.scale.category10();
   // Clear all previous nodes
   svg.selectAll("rect").remove();
 
