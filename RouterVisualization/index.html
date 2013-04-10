@@ -58,7 +58,7 @@ Released under the University of Illinois/NCSA Open Source License
 </head>
 <body>
 <div id="benchmark_zone" class="drop_zone">1) Drop benchmark file here</div>
-<div id="result_zone" class="drop_zone">2) Drop router results file here</div>
+<div id="router_zone" class="drop_zone">2) Drop router results file here</div>
 
 <script>
 
@@ -80,11 +80,47 @@ function handleFileSelectBenchmark(evt) {
   var csv = files[0];
   var reader = new FileReader();
   reader.onload = function(event) {
+    var NUM_LAYERS = 2;
     var rawText = event.target.result;
-    var data = d3.csv.parse(rawText);
-    drawVisualization(data);
+    var lines = rawText.split("\n");
+
+    var data = [];
+
+    var numVCells, numHCells, lineIndex, rawLine, splitData;
+
+    // First line specifies size of grid
+    splitData = lines[0].trim().split(/\s+/);
+    numHCells = parseInt(splitData[0]);
+    numVCells = parseInt(splitData[1]);
+
+    // Subsequent lines specify data for each grid
+    // We know that we have numVCells * NUM_LAYERS of lines to read
+    var currentX = 0, currentY = 0, layer = 1, attribute;
+    for(lineIndex = 1; lineIndex < numVCells * NUM_LAYERS; lineIndex++) {
+      rawLine = lines[lineIndex];
+      if(!isBlank(rawLine)) {
+        splitData = rawLine.trim().split(/\s+/);
+        for(currentX = 0; currentX < numHCells; currentX++) {
+          attribute = parseInt(splitData[currentX]);
+          data.push({x: currentX, y: currentY, layer: layer, attribute: attribute});
+        }
+      }
+
+      currentY++;
+      if(currentY == numVCells) {
+        currentY = 0;
+        layer++;
+      }
+    }
+
+    drawGrid(numHCells, numVCells, data);
   };
+
   reader.readAsText(csv);
+}
+
+var isBlank = function(string) {
+  return (!string || /^\s*$/.test(string));
 }
 
 function handleDragOverBenchmark(evt) {
@@ -124,8 +160,8 @@ benchmarkZone.addEventListener('dragover', handleDragOverBenchmark, false);
 benchmarkZone.addEventListener('drop', handleFileSelectBenchmark, false);
 
 var routerZone = document.getElementById('router_zone');
-benchmarkZone.addEventListener('dragover', handleDragOverRouter, false);
-benchmarkZone.addEventListener('drop', handleFileSelectRouter, false);
+routerZone.addEventListener('dragover', handleDragOverRouter, false);
+routerZone.addEventListener('drop', handleFileSelectRouter, false);
 
 var size = 700, padding = 25;
 
@@ -179,7 +215,7 @@ var yShift = d3.scale.linear()
 
 var color = d3.scale.category10();
 
-function drawVisualization(data) {
+function drawGrid(numHCells, numVCells, data) {
   // Clear all previous nodes
   svg.selectAll("rect").remove();
 
