@@ -18,12 +18,14 @@ Released under the University of Illinois/NCSA Open Source License
 
 <style>
   /* For drag-n-drop */
-  #drop_zone{
+  .drop_zone{
     border:2px dashed #bbb;
     -moz-border-radius:5px;
     -webkit-border-radius:5px;
     border-radius:5px;
     padding:25px;
+    margin-bottom: 5px;
+    margin-top: 5px;
     text-align:center;
     font:20pt bold,"Vollkorn";
     color:#bbb
@@ -55,7 +57,8 @@ Released under the University of Illinois/NCSA Open Source License
 </style>
 </head>
 <body>
-<div id="drop_zone">Drop router file here</div>
+<div id="benchmark_zone" class="drop_zone">1) Drop benchmark file here</div>
+<div id="result_zone" class="drop_zone">2) Drop router results file here</div>
 
 <script>
 
@@ -65,7 +68,7 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
   alert('The File APIs are not fully supported in this browser. Consider using one from http://www.html5rocks.com/en/features/file_access');
 }
 
-function handleFileSelect(evt) {
+function handleFileSelectBenchmark(evt) {
   evt.stopPropagation();
   evt.preventDefault();
 
@@ -84,16 +87,45 @@ function handleFileSelect(evt) {
   reader.readAsText(csv);
 }
 
-function handleDragOver(evt) {
+function handleDragOverBenchmark(evt) {
+  evt.stopPropagation();
+  evt.preventDefault();
+  evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+}
+
+function handleFileSelectRouter(evt) {
+  evt.stopPropagation();
+  evt.preventDefault();
+
+  var files = evt.dataTransfer.files; // FileList object.
+
+  // User can drag-n-drop multiple files at once so we pick only the first one.
+  // I don't know of a way to prevent drag-n-drop of multiple files at once.
+
+  var csv = files[0];
+  var reader = new FileReader();
+  reader.onload = function(event) {
+    var rawText = event.target.result;
+    var data = d3.csv.parse(rawText);
+    drawVisualization(data);
+  };
+  reader.readAsText(csv);
+}
+
+function handleDragOverRouter(evt) {
   evt.stopPropagation();
   evt.preventDefault();
   evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
 }
 
 // Setup the dnd listeners.
-var dropZone = document.getElementById('drop_zone');
-dropZone.addEventListener('dragover', handleDragOver, false);
-dropZone.addEventListener('drop', handleFileSelect, false);
+var benchmarkZone = document.getElementById('benchmark_zone');
+benchmarkZone.addEventListener('dragover', handleDragOverBenchmark, false);
+benchmarkZone.addEventListener('drop', handleFileSelectBenchmark, false);
+
+var routerZone = document.getElementById('router_zone');
+benchmarkZone.addEventListener('dragover', handleDragOverRouter, false);
+benchmarkZone.addEventListener('drop', handleFileSelectRouter, false);
 
 var size = 700, padding = 25;
 
@@ -119,34 +151,35 @@ var yAxis = d3.svg.axis()
 .tickSubdivide(true)
 .tickSize(-size);
 
+var svg = d3.select("body").append("svg")
+.attr("width", size + padding)
+.attr("height", size + padding)
+.append("g")
+.attr("transform", "translate(" + padding / 2 + "," + padding / 2 + ")");
+
+var xAxisGroup = svg.append("g")
+.attr("class", "x axis")
+.attr("transform", "translate(0," + size + ")")
+.call(xAxis);
+
+var xAxisGroup = svg.append("g")
+.attr("class", "y axis")
+.call(yAxis);
+
+// Use the scale to calculate the width and height for one cell
+// i.e., the difference between two points
+var cellWidth = Math.abs(x(1) - x(0)),
+    cellHeight = Math.abs(y(0) - y(1));
+
+// Need to shift the y-axis by cellHeight so that (0,0) is within the cell
+// Recall that the position of rect is determined by its top left corner
+var yShift = d3.scale.linear()
+.domain([0,100])
+.range([size - padding / 2 - cellHeight, padding / 2 - cellHeight]);
+
+var color = d3.scale.category10();
+
 function drawVisualization(data) {
-  var svg = d3.select("body").append("svg")
-  .attr("width", size + padding)
-  .attr("height", size + padding)
-  .append("g")
-  .attr("transform", "translate(" + padding / 2 + "," + padding / 2 + ")");
-
-  var xAxisGroup = svg.append("g")
-  .attr("class", "x axis")
-  .attr("transform", "translate(0," + size + ")")
-  .call(xAxis);
-
-  var xAxisGroup = svg.append("g")
-  .attr("class", "y axis")
-  .call(yAxis);
-
-  // Use the scale to calculate the width and height for one cell
-  // i.e., the difference between two points
-  var cellWidth = Math.abs(x(1) - x(0)),
-  cellHeight = Math.abs(y(0) - y(1));
-
-  // Need to shift the y-axis by cellHeight so that (0,0) is within the cell
-  // Recall that the position of rect is determined by its top left corner
-  var yShift = d3.scale.linear()
-  .domain([0,100])
-  .range([size - padding / 2 - cellHeight, padding / 2 - cellHeight]);
-
-  var color = d3.scale.category10();
   // Clear all previous nodes
   svg.selectAll("rect").remove();
 
