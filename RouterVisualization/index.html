@@ -357,6 +357,7 @@ function drawGrid(_numHCells, _numVCells, data) {
 }
 
 function drawRoutes(data) {
+  var STROKE_WIDTH = 8;
   var svg = d3.select("svg");
   var color = d3.scale.category10();
 
@@ -365,11 +366,11 @@ function drawRoutes(data) {
     // We want to connect dots from the center of the cells for nets
     var xCenter = d3.scale.linear()
     .domain([0, numHCells])
-    .range([padding / 2 + CELL_SIZE / 2, hSize + padding / 22 + CELL_SIZE / 2]);
+    .range([padding / 2 + CELL_SIZE / 2, hSize + padding / 2 + CELL_SIZE / 2]);
 
     var yCenter = d3.scale.linear()
     .domain([0, numVCells])
-    .range([vSize + padding / 2 + CELL_SIZE / 2, padding / 2 + CELL_SIZE / 2]);
+    .range([vSize + padding / 2 - CELL_SIZE / 2, padding / 2 - CELL_SIZE / 2]);
 
     var routerPath = d3.svg.line()
     .x(function(d) { 
@@ -403,8 +404,7 @@ function drawRoutes(data) {
     })
       .enter()
       .append("line")
-      .attr("stroke-width", 5)
-      .attr("stroke-linejoin", "miter")
+      .attr("stroke-width", STROKE_WIDTH)
       .attr("x1", function(d) {return xCenter(d.x1);})
       .attr("x2", function(d) {return xCenter(d.x2);})
       .attr("y1", function(d) {return yCenter(d.y1);})
