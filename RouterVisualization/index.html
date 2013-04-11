@@ -2,6 +2,7 @@
 Modified and derived from
 <http://www.html5rocks.com/en/tutorials/file/dndfiles/#toc-selecting-files-dnd>
 <http://bl.ocks.org/mbostock/4063663>
+<http://stackoverflow.com/questions/13069446/simple-fill-pattern-in-svg-diagonal-hatching>
 
 Code by the Illinois VLSI CAD teaching staff.
 Released under the University of Illinois/NCSA Open Source License
@@ -194,7 +195,58 @@ function drawGrid(numHCells, numVCells, data) {
   .tickSize(-(hSize + padding));
 
   var svg = d3.select("body").append("svg")
-  .attr("width", hSize + padding * 2)
+
+  var defs = svg.append("defs");
+
+  var layer1Hatch = defs.append("pattern")
+  .attr("id", "layer1Hatch")
+  .attr("patternUnits", "userSpaceOnUse")
+  .attr("x", 0)
+  .attr("y", 0)
+  .attr("width", 105)
+  .attr("height", 105)
+  .append("g")
+  .attr("style", "fill:none; stroke:black; stroke-width:1");
+
+  layer1Hatch.append("path").attr("d", "M0 90 l15,15");
+  layer1Hatch.append("path").attr("d", "M0 75 l30,30");
+  layer1Hatch.append("path").attr("d", "M0 60 l45,45");
+  layer1Hatch.append("path").attr("d", "M0 45 l60,60");
+  layer1Hatch.append("path").attr("d", "M0 30 l75,75");
+  layer1Hatch.append("path").attr("d", "M0 15 l90,90");
+  layer1Hatch.append("path").attr("d", "M0 0 l105,105");
+  layer1Hatch.append("path").attr("d", "M15 0 l90,90");
+  layer1Hatch.append("path").attr("d", "M30 0 l75,75");
+  layer1Hatch.append("path").attr("d", "M45 0 l60,60");
+  layer1Hatch.append("path").attr("d", "M60 0 l45,45");
+  layer1Hatch.append("path").attr("d", "M75 0 l30,30");
+  layer1Hatch.append("path").attr("d", "M90 0 l15,15");
+
+  var layer2Hatch = defs.append("pattern")
+  .attr("id", "layer1Hatch")
+  .attr("patternUnits", "userSpaceOnUse")
+  .attr("x", 0)
+  .attr("y", 0)
+  .attr("width", 105)
+  .attr("height", 105)
+  .append("g")
+  .attr("style", "fill:none; stroke:black; stroke-width:1");
+
+  layer1Hatch.append("path").attr("d", "M0 90 l15,15");
+  layer1Hatch.append("path").attr("d", "M0 75 l30,30");
+  layer1Hatch.append("path").attr("d", "M0 60 l45,45");
+  layer1Hatch.append("path").attr("d", "M0 45 l60,60");
+  layer1Hatch.append("path").attr("d", "M0 30 l75,75");
+  layer1Hatch.append("path").attr("d", "M0 15 l90,90");
+  layer1Hatch.append("path").attr("d", "M0 0 l105,105");
+  layer1Hatch.append("path").attr("d", "M15 0 l90,90");
+  layer1Hatch.append("path").attr("d", "M30 0 l75,75");
+  layer1Hatch.append("path").attr("d", "M45 0 l60,60");
+  layer1Hatch.append("path").attr("d", "M60 0 l45,45");
+  layer1Hatch.append("path").attr("d", "M75 0 l30,30");
+  layer1Hatch.append("path").attr("d", "M90 0 l15,15");
+
+  svg.attr("width", hSize + padding * 2)
   .attr("height", vSize + padding * 2)
   .append("g")
   .attr("transform", "translate(" + padding / 2 + "," + padding / 2 + ")");
@@ -225,10 +277,10 @@ function drawGrid(numHCells, numVCells, data) {
     return yShift(d.y)})
   .attr("width", CELL_SIZE)
   .attr("height", CELL_SIZE)
-  .attr("fill-opacity", 0.2)
+  .attr("fill-opacity", 0.4)
   .style("fill", function(d) {
     if(d.attribute == -1)
-      return d3.rgb("black");
+      return "url(#layer1Hatch)";
     else
       return "none";
      });
