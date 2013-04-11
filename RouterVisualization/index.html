@@ -2,7 +2,7 @@
 Modified and derived from
 <http://www.html5rocks.com/en/tutorials/file/dndfiles/#toc-selecting-files-dnd>
 <http://bl.ocks.org/mbostock/4063663>
-<http://stackoverflow.com/questions/13069446/simple-fill-pattern-in-svg-diagonal-hatching>
+<http://www.carto.net/papers/svg/samples/patterns.shtml>
 
 Code by the Illinois VLSI CAD teaching staff.
 Released under the University of Illinois/NCSA Open Source License
@@ -24,7 +24,7 @@ Released under the University of Illinois/NCSA Open Source License
     -moz-border-radius:5px;
     -webkit-border-radius:5px;
     border-radius:5px;
-    padding:25px;
+    padding:20px;
     margin-bottom: 5px;
     margin-top: 5px;
     text-align:center;
@@ -206,7 +206,7 @@ function drawGrid(numHCells, numVCells, data) {
   .attr("width", 105)
   .attr("height", 105)
   .append("g")
-  .attr("style", "fill:none; stroke:black; stroke-width:1");
+  .attr("style", "fill:none; stroke:blue; stroke-width:1");
 
   layer1Hatch.append("path").attr("d", "M0 90 l15,15");
   layer1Hatch.append("path").attr("d", "M0 75 l30,30");
@@ -223,28 +223,28 @@ function drawGrid(numHCells, numVCells, data) {
   layer1Hatch.append("path").attr("d", "M90 0 l15,15");
 
   var layer2Hatch = defs.append("pattern")
-  .attr("id", "layer1Hatch")
+  .attr("id", "layer2Hatch")
   .attr("patternUnits", "userSpaceOnUse")
   .attr("x", 0)
   .attr("y", 0)
   .attr("width", 105)
   .attr("height", 105)
   .append("g")
-  .attr("style", "fill:none; stroke:black; stroke-width:1");
+  .attr("style", "fill:none; stroke:red; stroke-width:1");
 
-  layer1Hatch.append("path").attr("d", "M0 90 l15,15");
-  layer1Hatch.append("path").attr("d", "M0 75 l30,30");
-  layer1Hatch.append("path").attr("d", "M0 60 l45,45");
-  layer1Hatch.append("path").attr("d", "M0 45 l60,60");
-  layer1Hatch.append("path").attr("d", "M0 30 l75,75");
-  layer1Hatch.append("path").attr("d", "M0 15 l90,90");
-  layer1Hatch.append("path").attr("d", "M0 0 l105,105");
-  layer1Hatch.append("path").attr("d", "M15 0 l90,90");
-  layer1Hatch.append("path").attr("d", "M30 0 l75,75");
-  layer1Hatch.append("path").attr("d", "M45 0 l60,60");
-  layer1Hatch.append("path").attr("d", "M60 0 l45,45");
-  layer1Hatch.append("path").attr("d", "M75 0 l30,30");
-  layer1Hatch.append("path").attr("d", "M90 0 l15,15");
+  layer2Hatch.append("path").attr("d", "M105 90 l-15,15");
+  layer2Hatch.append("path").attr("d", "M105 75 l-30,30");
+  layer2Hatch.append("path").attr("d", "M105 60 l-45,45");
+  layer2Hatch.append("path").attr("d", "M105 45 l-60,60");
+  layer2Hatch.append("path").attr("d", "M105 30 l-75,75");
+  layer2Hatch.append("path").attr("d", "M105 15 l-90,90");
+  layer2Hatch.append("path").attr("d", "M105 0 l-105,105");
+  layer2Hatch.append("path").attr("d", "M90 0 l-90,90");
+  layer2Hatch.append("path").attr("d", "M75 0 l-75,75");
+  layer2Hatch.append("path").attr("d", "M60 0 l-60,60");
+  layer2Hatch.append("path").attr("d", "M45 0 l-45,45");
+  layer2Hatch.append("path").attr("d", "M30 0 l-30,30");
+  layer2Hatch.append("path").attr("d", "M15 0 l-15,15");
 
   svg.attr("width", hSize + padding * 2)
   .attr("height", vSize + padding * 2)
@@ -279,8 +279,8 @@ function drawGrid(numHCells, numVCells, data) {
   .attr("height", CELL_SIZE)
   .attr("fill-opacity", 0.4)
   .style("fill", function(d) {
-    if(d.attribute == -1)
-      return "url(#layer1Hatch)";
+    if(d.attribute == -1) // Blockage
+      return d.layer == 1 ? "url(#layer1Hatch)" : "url(#layer2Hatch)";
     else
       return "none";
      });
