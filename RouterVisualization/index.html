@@ -199,7 +199,7 @@ routerZone.addEventListener('drop', handleFileSelectRouter, false);
 // Local to this module
 // Shared variables between both drawing routines
 var x, y, yShift 
-var CELL_SIZE = 40;
+var CELL_SIZE = 16;
 
 function drawGrid(numHCells, numVCells, data) {
 
@@ -223,13 +223,13 @@ function drawGrid(numHCells, numVCells, data) {
 
   y = d3.scale.linear()
   .domain([0, numVCells])
-  .range([vSize + padding / 2, padding / 2]);
+  .range([padding / 2, vSize + padding / 2]);
 
   var xAxis = d3.svg.axis()
   .scale(x)
-  .orient("bottom")
+  .orient("top")
   .ticks(numHCells)
-  .tickSize(-(vSize + padding));
+  .tickSize((vSize + padding));
 
   var yAxis = d3.svg.axis()
   .scale(y)
@@ -311,7 +311,7 @@ function drawGrid(numHCells, numVCells, data) {
   // Recall that the position of rect is determined by its top left corner
   yShift = d3.scale.linear()
   .domain([0, numVCells])
-  .range([vSize + padding / 2 - CELL_SIZE, padding / 2 - CELL_SIZE]);
+  .range([padding / 2 , vSize + padding / 2]);
 
   // Populate with new data
   svg.selectAll("rect")
