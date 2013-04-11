@@ -57,7 +57,7 @@ Released under the University of Illinois/NCSA Open Source License
   }
 
   .cell {
-    /*Placeholder to facilita selection*/
+      /*Placeholder to facilite selection*/
   }
 </style>
 </head>
@@ -130,6 +130,17 @@ var isBlank = function(string) {
   return (!string || /^\s*$/.test(string));
 }
 
+var isNetStartingSymbol = function(string) {
+  var trimmed = string.trim();
+  return trimmed.split(/\s+/).length == 1
+         && trimmed.match(/\d+/) !== null
+         && !isNetTerminatingSymbol(string);
+}
+
+var isNetTerminatingSymbol = function(string) {
+  return string === '0';
+}
+
 var isPossibleRoutingCell  = function(string) {
   return string.trim().split(/\s+/).length === 3;
 }
@@ -151,27 +162,34 @@ function handleFileSelectRouter(evt) {
     var lines = rawText.split("\n");
 
     var data = [];
-
-    var numNets, currentNet, lineIndex, rawLine, splitData, layer, x, y;
+    var numNets, netNumber, currentNetData, lineIndex, rawLine, splitData, layer, x, y;
 
     // First line specify number of nets
-    numNets = parseInt(lines[0]);
+    numNets = parseInt(lines[0]); // No need to use it for now
 
     // Subsequent lines specify the position routes (which cells are on)
     for(lineIndex = 1; lineIndex < lines.length; lineIndex++) {
       rawLine = lines[lineIndex];
       if(!isBlank(rawLine)) {
-        if(isPossibleRoutingCell(rawLine)) {
+        if(isNetStartingSymbol(rawLine)) {
+          netNumber = parseInt(rawLine.trim());
+          currentNetData = {net: netNumber, points: []};
+        }
+        else if(isPossibleRoutingCell(rawLine)) {
           splitData = rawLine.trim().split(/\s+/);
           layer = parseInt(splitData[0]);
           x = parseInt(splitData[1]);
           y = parseInt(splitData[2]);
-          data.push({layer: layer, x: x, y: y});
+          currentNetData['points'].push({layer: layer, x: x, y: y});
+        } else if(isNetTerminatingSymbol(rawLine)){
+          data.push(currentNetData);
+        } else {
+           // TODO: Throw some exception since we have found a line that doesn't match
         }
       }
     }
 
-    drawCells(data);
+    drawRoutes(data);
 
   };
 
@@ -199,13 +217,18 @@ routerZone.addEventListener('drop', handleFileSelectRouter, false);
 // Local to this module
 // Shared variables between both drawing routines
 var x, y, yShift 
+var numHCells, numVCells;
+var hSize, vSize;
 var CELL_SIZE = 16;
+var padding;
 
-function drawGrid(numHCells, numVCells, data) {
+function drawGrid(_numHCells, _numVCells, data) {
 
   d3.select("svg").remove();
 
-  var padding = 25,
+  padding = 25,
+  numHCells = _numHCells;
+  numVCells = _numVCells;
   hSize = CELL_SIZE * numHCells,
   vSize = CELL_SIZE * numVCells;
 
@@ -223,13 +246,13 @@ function drawGrid(numHCells, numVCells, data) {
 
   y = d3.scale.linear()
   .domain([0, numVCells])
-  .range([padding / 2, vSize + padding / 2]);
+  .range([vSize + padding / 2, padding / 2]);
 
   var xAxis = d3.svg.axis()
   .scale(x)
-  .orient("top")
+  .orient("bottom")
   .ticks(numHCells)
-  .tickSize((vSize + padding));
+  .tickSize(-(vSize + padding));
 
   var yAxis = d3.svg.axis()
   .scale(y)
@@ -311,7 +334,7 @@ function drawGrid(numHCells, numVCells, data) {
   // Recall that the position of rect is determined by its top left corner
   yShift = d3.scale.linear()
   .domain([0, numVCells])
-  .range([padding / 2 , vSize + padding / 2]);
+  .range([vSize + padding / 2 - CELL_SIZE, padding / 2 - CELL_SIZE]);
 
   // Populate with new data
   svg.selectAll("rect")
@@ -333,28 +356,60 @@ function drawGrid(numHCells, numVCells, data) {
      });
 }
 
-function drawCells(data) {
+function drawRoutes(data) {
   var svg = d3.select("svg");
   var color = d3.scale.category10();
 
   if(svg) { // only perform if we have an existing grid from benchmark file 
+
+    // We want to connect dots from the center of the cells for nets
+    var xCenter = d3.scale.linear()
+    .domain([0, numHCells])
+    .range([padding / 2 + CELL_SIZE / 2, hSize + padding / 22 + CELL_SIZE / 2]);
+
+    var yCenter = d3.scale.linear()
+    .domain([0, numVCells])
+    .range([vSize + padding / 2 + CELL_SIZE / 2, padding / 2 + CELL_SIZE / 2]);
+
+    var routerPath = d3.svg.line()
+    .x(function(d) { 
+      return xCenter(d.x); })
+    .y(function(d) { 
+      return yCenter(d.y); })
+    .interpolate("linear");
 
     svg.selectAll(".cell").remove(); // Clear previous routes, if any.
 
     svg.selectAll(".cell")
     .data(data)
     .enter()
-    .append("rect")
-    .attr("class", "cell")
-    .attr("fill-opacity", 0.5)
-    .attr("x", function(d) {
-      return x(d.x)})
-    .attr("y", function(d) {
-      return yShift(d.y)})
-    .attr("width", CELL_SIZE)
-    .attr("height", CELL_SIZE)
-    .style("fill", function(d) {
-      return color(d.layer)});
+    .append("g")
+      .attr("class", "cell")
+      .attr("fill-opacity", 0.5)
+    .selectAll("line")
+    .data(function(d) {
+      var processedData = [];
+      var index, x1, x2, y1, y2, layer;
+      for(index = 0; index < d.points.length - 1; index++) {
+        x1 = d.points[index].x;
+        x2 = d.points[index +  1].x;
+        y1 = d.points[index].y;
+        y2 = d.points[index +  1].y;
+        layer = d.points[index].layer;
+        processedData.push({x1: x1, x2: x2, y1: y1, y2: y2, layer: layer});
+      }
+
+      return processedData;
+    })
+      .enter()
+      .append("line")
+      .attr("stroke-width", 5)
+      .attr("stroke-linejoin", "miter")
+      .attr("x1", function(d) {return xCenter(d.x1);})
+      .attr("x2", function(d) {return xCenter(d.x2);})
+      .attr("y1", function(d) {return yCenter(d.y1);})
+      .attr("y2", function(d) {return yCenter(d.y2);})
+      .attr("stroke", function(d) {return color(d.layer);});
   }
 }
 
