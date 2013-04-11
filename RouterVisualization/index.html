@@ -69,17 +69,19 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
   alert('The File APIs are not fully supported in this browser. Consider using one from http://www.html5rocks.com/en/features/file_access');
 }
 
+
+// DRAG-N-DROP
+//////////////
+
 function handleFileSelectBenchmark(evt) {
   evt.stopPropagation();
   evt.preventDefault();
 
   var files = evt.dataTransfer.files; // FileList object.
 
-  // User can drag-n-drop multiple files at once so we pick only the first one.
-  // I don't know of a way to prevent drag-n-drop of multiple files at once.
-
-  var csv = files[0];
+  var gridFile = files[0];
   var reader = new FileReader();
+
   reader.onload = function(event) {
     var NUM_LAYERS = 2;
     var rawText = event.target.result;
@@ -117,18 +119,13 @@ function handleFileSelectBenchmark(evt) {
     drawGrid(numHCells, numVCells, data);
   };
 
-  reader.readAsText(csv);
+  reader.readAsText(gridFile);
 }
 
 var isBlank = function(string) {
   return (!string || /^\s*$/.test(string));
 }
 
-function handleDragOverBenchmark(evt) {
-  evt.stopPropagation();
-  evt.preventDefault();
-  evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-}
 
 function handleFileSelectRouter(evt) {
   evt.stopPropagation();
@@ -149,7 +146,7 @@ function handleFileSelectRouter(evt) {
   reader.readAsText(csv);
 }
 
-function handleDragOverRouter(evt) {
+function handleDragOver(evt) {
   evt.stopPropagation();
   evt.preventDefault();
   evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
@@ -157,13 +154,15 @@ function handleDragOverRouter(evt) {
 
 // Setup the dnd listeners.
 var benchmarkZone = document.getElementById('benchmark_zone');
-benchmarkZone.addEventListener('dragover', handleDragOverBenchmark, false);
+benchmarkZone.addEventListener('dragover', handleDragOver, false);
 benchmarkZone.addEventListener('drop', handleFileSelectBenchmark, false);
 
 var routerZone = document.getElementById('router_zone');
-routerZone.addEventListener('dragover', handleDragOverRouter, false);
+routerZone.addEventListener('dragover', handleDragOver, false);
 routerZone.addEventListener('drop', handleFileSelectRouter, false);
 
+// VISUALIZATION
+////////////////
 
 function drawGrid(numHCells, numVCells, data) {
   var CELL_SIZE = 40;
@@ -173,6 +172,14 @@ function drawGrid(numHCells, numVCells, data) {
   var padding = 25,
   hSize = CELL_SIZE * numHCells,
   vSize = CELL_SIZE * numVCells;
+
+  // SVG
+  //////
+
+  var svg = d3.select("body").append("svg")
+
+  // AXES
+  ////////
 
   var x = d3.scale.linear()
   .domain([0, numHCells])
@@ -194,7 +201,22 @@ function drawGrid(numHCells, numVCells, data) {
   .ticks(numVCells)
   .tickSize(-(hSize + padding));
 
-  var svg = d3.select("body").append("svg")
+  svg.attr("width", hSize + padding * 2)
+  .attr("height", vSize + padding * 2)
+  .append("g")
+  .attr("transform", "translate(" + padding / 2 + "," + padding / 2 + ")");
+
+  var xAxisGroup = svg.append("g")
+  .attr("class", "x axis")
+  .attr("transform", "translate(0," + (vSize + padding) + ")")
+  .call(xAxis);
+
+  var yAxisGroup = svg.append("g")
+  .attr("class", "y axis")
+  .call(yAxis);
+
+  // HATCHING PATTERNS
+  ////////////////////
 
   var defs = svg.append("defs");
 
@@ -246,19 +268,8 @@ function drawGrid(numHCells, numVCells, data) {
   layer2Hatch.append("path").attr("d", "M30 0 l-30,30");
   layer2Hatch.append("path").attr("d", "M15 0 l-15,15");
 
-  svg.attr("width", hSize + padding * 2)
-  .attr("height", vSize + padding * 2)
-  .append("g")
-  .attr("transform", "translate(" + padding / 2 + "," + padding / 2 + ")");
-
-  var xAxisGroup = svg.append("g")
-  .attr("class", "x axis")
-  .attr("transform", "translate(0," + (vSize + padding) + ")")
-  .call(xAxis);
-
-  var yAxisGroup = svg.append("g")
-  .attr("class", "y axis")
-  .call(yAxis);
+  // CELLS
+  ////////
 
   // Need to shift the y-axis by cellHeight so that (0,0) is within the cell
   // Recall that the position of rect is determined by its top left corner
@@ -284,6 +295,9 @@ function drawGrid(numHCells, numVCells, data) {
     else
       return "none";
      });
+}
+
+function drawCells(data) {
 }
 
 </script>
