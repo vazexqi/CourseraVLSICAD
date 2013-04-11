@@ -15,7 +15,8 @@ Released under the University of Illinois/NCSA Open Source License
 <title>
   Visualize Routes for Programming Assignment #4
 </title>
-<script type="text/javascript" src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<!-- Serve locally because we need https-->
+<script type="text/javascript" src="https://spark-public.s3.amazonaws.com/vlsicad/javascript_tools/d3.min.js" charset="utf-8"></script>
 
 <style>
   /* For drag-n-drop */
@@ -62,8 +63,8 @@ Released under the University of Illinois/NCSA Open Source License
 </style>
 </head>
 <body>
-<div id="benchmark_zone" class="drop_zone">1) Drop benchmark file here</div>
-<div id="router_zone" class="drop_zone">2) Drop router results file here</div>
+<div id="benchmark_zone" class="drop_zone" style="float:left; width:45%">1) Drop benchmark file here</div>
+<div id="router_zone" class="drop_zone" style="float:right; width:45%">2) Drop router results file here</div>
 
 <script>
 
