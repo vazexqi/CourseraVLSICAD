@@ -357,7 +357,10 @@ function drawGrid(_numHCells, _numVCells, data) {
 }
 
 function drawRoutes(data) {
-  var STROKE_WIDTH = 8;
+  var STROKE_WIDTH = 4;
+  var VIA_LAYER = 3;
+  var UNKNOWN_LAYER = -1;
+
   var svg = d3.select("svg");
   var color = d3.scale.category10();
 
@@ -386,30 +389,46 @@ function drawRoutes(data) {
     .enter()
     .append("g")
       .attr("class", "cell")
-      .attr("fill-opacity", 0.5)
-    .selectAll("line")
+      .attr("stroke-opacity", 0.8)
+    .selectAll("path")
     .data(function(d) {
       var processedData = [];
-      var index, x1, x2, y1, y2, layer;
-      for(index = 0; index < d.points.length - 1; index++) {
-        x1 = d.points[index].x;
-        x2 = d.points[index +  1].x;
-        y1 = d.points[index].y;
-        y2 = d.points[index +  1].y;
-        layer = d.points[index].layer;
-        processedData.push({x1: x1, x2: x2, y1: y1, y2: y2, layer: layer});
+      var index, x, y, currentLayerData, currentLayer = UNKNOWN_LAYER;
+
+      for(index = 0; index < d.points.length; index++) {
+        if(currentLayer === UNKNOWN_LAYER) {
+          currentLayer = d.points[index].layer;
+          currentLayerData = {layer: currentLayer, points: []};
+        }
+
+        if(d.points[index].layer === currentLayer) {
+          x = d.points[index].x;
+          y = d.points[index].y;
+          currentLayerData.points.push({x: x, y:y});
+        } else {
+          // Skips this layer via datapoint
+          // STRONG ASSUMPTION: All transitions between layers must be accompanied with a 
+          // via as mentioned in the write up
+          processedData.push(currentLayerData);
+          currentLayer = UNKNOWN_LAYER;
+          currentLayerData = null;
+        }
+      }
+
+      // There is the possibility that we never switch layers, in that case,
+      // push the value here
+      if(currentLayerData !== null) {
+        processedData.push(currentLayerData);
       }
 
       return processedData;
     })
       .enter()
-      .append("line")
+      .append("path")
       .attr("stroke-width", STROKE_WIDTH)
-      .attr("x1", function(d) {return xCenter(d.x1);})
-      .attr("x2", function(d) {return xCenter(d.x2);})
-      .attr("y1", function(d) {return yCenter(d.y1);})
-      .attr("y2", function(d) {return yCenter(d.y2);})
-      .attr("stroke", function(d) {return color(d.layer);});
+      .attr("fill", "none")
+      .attr("stroke", function(d) { return d ? color(d.layer) : null;})
+      .attr("d", function(d){ return d ? routerPath(d.points) : null;});
   }
 }
 
