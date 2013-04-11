@@ -34,7 +34,7 @@ Released under the University of Illinois/NCSA Open Source License
 
   /* For actual chart */
   svg {
-      font: 10px sans-serif;
+      font: 8px sans-serif;
       padding: 10px;
   }
 
@@ -226,7 +226,7 @@ function drawGrid(_numHCells, _numVCells, data) {
 
   d3.select("svg").remove();
 
-  padding = 25,
+  padding = 50,
   numHCells = _numHCells;
   numVCells = _numVCells;
   hSize = CELL_SIZE * numHCells,
@@ -254,11 +254,13 @@ function drawGrid(_numHCells, _numVCells, data) {
   .ticks(numHCells)
   .tickSize(-(vSize + padding));
 
+  var spacer = 20; // The y-axis display needs a bit more room to display since it is left flushed
+
   var yAxis = d3.svg.axis()
   .scale(y)
   .orient("left")
   .ticks(numVCells)
-  .tickSize(-(hSize + padding));
+  .tickSize(-(hSize + padding - spacer));
 
   svg.attr("width", hSize + padding * 2)
   .attr("height", vSize + padding * 2)
@@ -272,6 +274,7 @@ function drawGrid(_numHCells, _numVCells, data) {
 
   var yAxisGroup = svg.append("g")
   .attr("class", "y axis")
+  .attr("transform", "translate(" + 20 + ",0)")
   .call(yAxis);
 
   // HATCHING PATTERNS
@@ -347,7 +350,7 @@ function drawGrid(_numHCells, _numVCells, data) {
     return yShift(d.y)})
   .attr("width", CELL_SIZE)
   .attr("height", CELL_SIZE)
-  .attr("fill-opacity", 0.5)
+  .attr("fill-opacity", 0.8)
   .style("fill", function(d) {
     if(d.attribute === -1) // Blockage
       return d.layer === 1 ? "url(#layer1Hatch)" : "url(#layer2Hatch)";
