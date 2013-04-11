@@ -163,59 +163,57 @@ var routerZone = document.getElementById('router_zone');
 routerZone.addEventListener('dragover', handleDragOverRouter, false);
 routerZone.addEventListener('drop', handleFileSelectRouter, false);
 
-var size = 700, padding = 25;
-
-var x = d3.scale.linear()
-.domain([0,100])
-.range([padding / 2, size - padding / 2]);
-
-var y = d3.scale.linear()
-.domain([0,100])
-.range([size - padding / 2, padding / 2]);
-
- var xAxis = d3.svg.axis()
-.scale(x)
-.orient("bottom")
-.ticks(10)
-.tickSubdivide(true)
-.tickSize(-size);
-
-var yAxis = d3.svg.axis()
-.scale(y)
-.orient("left")
-.ticks(10)
-.tickSubdivide(true)
-.tickSize(-size);
-
-var svg = d3.select("body").append("svg")
-.attr("width", size + padding)
-.attr("height", size + padding)
-.append("g")
-.attr("transform", "translate(" + padding / 2 + "," + padding / 2 + ")");
-
-var xAxisGroup = svg.append("g")
-.attr("class", "x axis")
-.attr("transform", "translate(0," + size + ")")
-.call(xAxis);
-
-var xAxisGroup = svg.append("g")
-.attr("class", "y axis")
-.call(yAxis);
-
-// Use the scale to calculate the width and height for one cell
-// i.e., the difference between two points
-var cellWidth = Math.abs(x(1) - x(0)),
-    cellHeight = Math.abs(y(0) - y(1));
-
-// Need to shift the y-axis by cellHeight so that (0,0) is within the cell
-// Recall that the position of rect is determined by its top left corner
-var yShift = d3.scale.linear()
-.domain([0,100])
-.range([size - padding / 2 - cellHeight, padding / 2 - cellHeight]);
-
-var color = d3.scale.category10();
 
 function drawGrid(numHCells, numVCells, data) {
+  var CELL_SIZE = 40;
+
+  var padding = 25, 
+  hSize = CELL_SIZE * numHCells,
+  vSize = CELL_SIZE * numVCells;
+
+  var x = d3.scale.linear()
+  .domain([0, numHCells])
+  .range([padding / 2, hSize + padding / 2]);
+
+  var y = d3.scale.linear()
+  .domain([0, numVCells])
+  .range([vSize, padding / 2]);
+
+  var xAxis = d3.svg.axis()
+  .scale(x)
+  .orient("bottom")
+  .ticks(numHCells)
+  .tickSize(-vSize);
+
+  var yAxis = d3.svg.axis()
+  .scale(y)
+  .orient("left")
+  .ticks(numVCells)
+  .tickSize(-hSize);
+
+  var svg = d3.select("body").append("svg")
+  .attr("width", hSize + padding)
+  .attr("height", vSize + padding)
+  .append("g")
+  .attr("transform", "translate(" + padding / 2 + "," + padding / 2 + ")");
+
+  var xAxisGroup = svg.append("g")
+  .attr("class", "x axis")
+  .attr("transform", "translate(0," + vSize + ")")
+  .call(xAxis);
+
+  var xAxisGroup = svg.append("g")
+  .attr("class", "y axis")
+  .attr("transform", "translate(" + padding / 2 + ",0)")
+  .call(yAxis);
+
+  // Need to shift the y-axis by cellHeight so that (0,0) is within the cell
+  // Recall that the position of rect is determined by its top left corner
+  var yShift = d3.scale.linear()
+  .domain([0, numVCells])
+  .range([vSize - CELL_SIZE, padding / 2 - CELL_SIZE]);
+
+  var color = d3.scale.category10();
   // Clear all previous nodes
   svg.selectAll("rect").remove();
 
@@ -228,12 +226,14 @@ function drawGrid(numHCells, numVCells, data) {
     return x(d.x)})
   .attr("y", function(d) {
     return yShift(d.y)})
-  .attr("width", function(d) {
-    return cellWidth})
-  .attr("height", function(d) {
-    return cellHeight})
+  .attr("width", CELL_SIZE)
+  .attr("height", CELL_SIZE)
   .style("fill", function(d) {
-     return color(d.type)});
+    if(d.attribute == -1)
+      return d3.rgb("black");
+    else
+      return d3.rgb("white");
+     });
 }
 
 </script>
