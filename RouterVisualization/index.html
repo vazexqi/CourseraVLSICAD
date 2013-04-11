@@ -53,7 +53,11 @@ Released under the University of Illinois/NCSA Open Source License
 
   .frame {
       fill: none;
-        stroke: #aaa;
+      stroke: #aaa;
+  }
+
+  .cell {
+    /*Placeholder to facilita selection*/
   }
 </style>
 </head>
@@ -110,7 +114,7 @@ function handleFileSelectBenchmark(evt) {
       }
 
       currentY++;
-      if(currentY == numVCells) {
+      if(currentY === numVCells) {
         currentY = 0;
         layer++;
       }
@@ -126,6 +130,9 @@ var isBlank = function(string) {
   return (!string || /^\s*$/.test(string));
 }
 
+var isPossibleRoutingCell  = function(string) {
+  return string.trim().split(/\s+/).length === 3;
+}
 
 function handleFileSelectRouter(evt) {
   evt.stopPropagation();
@@ -136,14 +143,39 @@ function handleFileSelectRouter(evt) {
   // User can drag-n-drop multiple files at once so we pick only the first one.
   // I don't know of a way to prevent drag-n-drop of multiple files at once.
 
-  var csv = files[0];
+  var router = files[0];
+
   var reader = new FileReader();
   reader.onload = function(event) {
     var rawText = event.target.result;
-    var data = d3.csv.parse(rawText);
-    drawVisualization(data);
+    var lines = rawText.split("\n");
+
+    var data = [];
+
+    var numNets, currentNet, lineIndex, rawLine, splitData, layer, x, y;
+
+    // First line specify number of nets
+    numNets = parseInt(lines[0]);
+
+    // Subsequent lines specify the position routes (which cells are on)
+    for(lineIndex = 1; lineIndex < lines.length; lineIndex++) {
+      rawLine = lines[lineIndex];
+      if(!isBlank(rawLine)) {
+        if(isPossibleRoutingCell(rawLine)) {
+          splitData = rawLine.trim().split(/\s+/);
+          layer = parseInt(splitData[0]);
+          x = parseInt(splitData[1]);
+          y = parseInt(splitData[2]);
+          data.push({layer: layer, x: x, y: y});
+        }
+      }
+    }
+
+    drawCells(data);
+
   };
-  reader.readAsText(csv);
+
+  reader.readAsText(router);
 }
 
 function handleDragOver(evt) {
@@ -164,8 +196,12 @@ routerZone.addEventListener('drop', handleFileSelectRouter, false);
 // VISUALIZATION
 ////////////////
 
+// Local to this module
+// Shared variables between both drawing routines
+var x, y, yShift 
+var CELL_SIZE = 40;
+
 function drawGrid(numHCells, numVCells, data) {
-  var CELL_SIZE = 40;
 
   d3.select("svg").remove();
 
@@ -181,11 +217,11 @@ function drawGrid(numHCells, numVCells, data) {
   // AXES
   ////////
 
-  var x = d3.scale.linear()
+  x = d3.scale.linear()
   .domain([0, numHCells])
   .range([padding / 2, hSize + padding / 2]);
 
-  var y = d3.scale.linear()
+  y = d3.scale.linear()
   .domain([0, numVCells])
   .range([vSize + padding / 2, padding / 2]);
 
@@ -273,7 +309,7 @@ function drawGrid(numHCells, numVCells, data) {
 
   // Need to shift the y-axis by cellHeight so that (0,0) is within the cell
   // Recall that the position of rect is determined by its top left corner
-  var yShift = d3.scale.linear()
+  yShift = d3.scale.linear()
   .domain([0, numVCells])
   .range([vSize + padding / 2 - CELL_SIZE, padding / 2 - CELL_SIZE]);
 
@@ -288,16 +324,38 @@ function drawGrid(numHCells, numVCells, data) {
     return yShift(d.y)})
   .attr("width", CELL_SIZE)
   .attr("height", CELL_SIZE)
-  .attr("fill-opacity", 0.4)
+  .attr("fill-opacity", 0.5)
   .style("fill", function(d) {
-    if(d.attribute == -1) // Blockage
-      return d.layer == 1 ? "url(#layer1Hatch)" : "url(#layer2Hatch)";
+    if(d.attribute === -1) // Blockage
+      return d.layer === 1 ? "url(#layer1Hatch)" : "url(#layer2Hatch)";
     else
       return "none";
      });
 }
 
 function drawCells(data) {
+  var svg = d3.select("svg");
+  var color = d3.scale.category10();
+
+  if(svg) { // only perform if we have an existing grid from benchmark file 
+
+    svg.selectAll(".cell").remove(); // Clear previous routes, if any.
+
+    svg.selectAll(".cell")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("class", "cell")
+    .attr("fill-opacity", 0.5)
+    .attr("x", function(d) {
+      return x(d.x)})
+    .attr("y", function(d) {
+      return yShift(d.y)})
+    .attr("width", CELL_SIZE)
+    .attr("height", CELL_SIZE)
+    .style("fill", function(d) {
+      return color(d.layer)});
+  }
 }
 
 </script>
