@@ -167,6 +167,8 @@ routerZone.addEventListener('drop', handleFileSelectRouter, false);
 function drawGrid(numHCells, numVCells, data) {
   var CELL_SIZE = 40;
 
+  d3.select("svg").remove();
+
   var padding = 25,
   hSize = CELL_SIZE * numHCells,
   vSize = CELL_SIZE * numVCells;
@@ -212,10 +214,6 @@ function drawGrid(numHCells, numVCells, data) {
   .domain([0, numVCells])
   .range([vSize + padding / 2 - CELL_SIZE, padding / 2 - CELL_SIZE]);
 
-  var color = d3.scale.category10();
-  // Clear all previous nodes
-  svg.selectAll("rect").remove();
-
   // Populate with new data
   svg.selectAll("rect")
   .data(data)
@@ -227,11 +225,12 @@ function drawGrid(numHCells, numVCells, data) {
     return yShift(d.y)})
   .attr("width", CELL_SIZE)
   .attr("height", CELL_SIZE)
+  .attr("fill-opacity", 0.2)
   .style("fill", function(d) {
     if(d.attribute == -1)
       return d3.rgb("black");
     else
-      return d3.rgb("white");
+      return "none";
      });
 }
 
