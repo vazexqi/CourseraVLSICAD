@@ -102,7 +102,7 @@ var edu = {
           // Subsequent lines specify data for each grid
           // We know that we have numVCells * NUM_LAYERS of lines to read
           var currentX = 0, currentY = 0, layer = 1, attribute;
-          for(lineIndex = 1; lineIndex < numVCells * NUM_LAYERS; lineIndex++) {
+          for(lineIndex = 1; lineIndex <= numVCells * NUM_LAYERS; lineIndex++) {
             rawLine = lines[lineIndex];
             if(!isBlank(rawLine)) {
               splitData = rawLine.trim().split(/\s+/);
