@@ -68,326 +68,344 @@ Released under the University of Illinois/NCSA Open Source License
 
 <script>
 
+
+var edu = {
+  illinois: {
+    vlsicad: (function() {
+      //////////////
+      // DRAG-N-DROP
+      //////////////
+      
+      var handleFileSelectBenchmark = function(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+
+        var files = evt.dataTransfer.files; // FileList object.
+
+        var gridFile = files[0];
+        var reader = new FileReader();
+
+        reader.onload = function(event) {
+          var NUM_LAYERS = 2;
+          var rawText = event.target.result;
+          var lines = rawText.split("\n");
+
+          var data = [];
+
+          var numVCells, numHCells, lineIndex, rawLine, splitData;
+
+          // First line specifies size of grid
+          splitData = lines[0].trim().split(/\s+/);
+          numHCells = parseInt(splitData[0]);
+          numVCells = parseInt(splitData[1]);
+
+          // Subsequent lines specify data for each grid
+          // We know that we have numVCells * NUM_LAYERS of lines to read
+          var currentX = 0, currentY = 0, layer = 1, attribute;
+          for(lineIndex = 1; lineIndex < numVCells * NUM_LAYERS; lineIndex++) {
+            rawLine = lines[lineIndex];
+            if(!isBlank(rawLine)) {
+              splitData = rawLine.trim().split(/\s+/);
+              for(currentX = 0; currentX < numHCells; currentX++) {
+                attribute = parseInt(splitData[currentX]);
+                data.push({x: currentX, y: currentY, layer: layer, attribute: attribute});
+              }
+            }
+
+            currentY++;
+            if(currentY === numVCells) {
+              currentY = 0;
+              layer++;
+            }
+          }
+
+          drawGrid(numHCells, numVCells, data);
+        };
+
+        reader.readAsText(gridFile);
+      }
+
+      var isBlank = function(string) {
+        return (!string || /^\s*$/.test(string));
+      }
+
+      var isNetStartingSymbol = function(string) {
+        var trimmed = string.trim();
+        return trimmed.split(/\s+/).length == 1
+               && trimmed.match(/\d+/) !== null
+               && !isNetTerminatingSymbol(string);
+      }
+
+      var isNetTerminatingSymbol = function(string) {
+        return string === '0';
+      }
+
+      var isPossibleRoutingCell  = function(string) {
+        return string.trim().split(/\s+/).length === 3;
+      }
+
+      var handleFileSelectRouter = function(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+
+        var files = evt.dataTransfer.files; // FileList object.
+
+        // User can drag-n-drop multiple files at once so we pick only the first one.
+        // I don't know of a way to prevent drag-n-drop of multiple files at once.
+
+        var router = files[0];
+
+        var reader = new FileReader();
+        reader.onload = function(event) {
+          var rawText = event.target.result;
+          var lines = rawText.split("\n");
+
+          var data = [];
+          var numNets, netNumber, currentNetData, lineIndex, rawLine, splitData, layer, x, y;
+
+          // First line specify number of nets
+          numNets = parseInt(lines[0]); // No need to use it for now
+
+          // Subsequent lines specify the position routes (which cells are on)
+          for(lineIndex = 1; lineIndex < lines.length; lineIndex++) {
+            rawLine = lines[lineIndex];
+            if(!isBlank(rawLine)) {
+              if(isNetStartingSymbol(rawLine)) {
+                netNumber = parseInt(rawLine.trim());
+                currentNetData = {net: netNumber, points: []};
+              }
+              else if(isPossibleRoutingCell(rawLine)) {
+                splitData = rawLine.trim().split(/\s+/);
+                layer = parseInt(splitData[0]);
+                x = parseInt(splitData[1]);
+                y = parseInt(splitData[2]);
+                currentNetData['points'].push({layer: layer, x: x, y: y});
+              } else if(isNetTerminatingSymbol(rawLine)){
+                data.push(currentNetData);
+              } else {
+                 // TODO: Throw some exception since we have found a line that doesn't match
+              }
+            }
+          }
+
+          drawRoutes(data);
+
+        };
+
+        reader.readAsText(router);
+      }
+
+      var handleDragOver = function(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+      }
+
+      ////////////////
+      // VISUALIZATION
+      ////////////////
+
+      // Local to this module
+      // Shared variables between both drawing routines
+      var x, y, yShift 
+      var numHCells, numVCells;
+      var hSize, vSize;
+      var CELL_SIZE = 16;
+      var padding;
+
+      var drawGrid = function(_numHCells, _numVCells, data) {
+
+        d3.select("svg").remove();
+
+        padding = 50,
+        numHCells = _numHCells;
+        numVCells = _numVCells;
+        hSize = CELL_SIZE * numHCells,
+        vSize = CELL_SIZE * numVCells;
+
+        // SVG
+        //////
+
+        var svg = d3.select("body").append("svg")
+
+        // AXES
+        ////////
+
+        var SUBDIVISION = 5;
+
+        x = d3.scale.linear()
+        .domain([0, numHCells])
+        .range([padding / 2, hSize + padding / 2]);
+
+        y = d3.scale.linear()
+        .domain([0, numVCells])
+        .range([vSize + padding / 2, padding / 2]);
+
+        var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom")
+        .ticks(numHCells / SUBDIVISION)
+        .tickSubdivide(SUBDIVISION - 1)
+        .tickSize(-(vSize + padding));
+
+        var spacer = 20; // The y-axis display needs a bit more room to display since it is left flushed
+
+        var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(numVCells / SUBDIVISION)
+        .tickSubdivide(SUBDIVISION - 1)
+        .tickSize(-(hSize + padding - spacer));
+
+        svg.attr("width", hSize + padding * 2)
+        .attr("height", vSize + padding * 2)
+        .append("g")
+        .attr("transform", "translate(" + padding / 2 + "," + padding / 2 + ")");
+
+        var xAxisGroup = svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + (vSize + padding) + ")")
+        .call(xAxis);
+
+        var yAxisGroup = svg.append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(" + 20 + ",0)")
+        .call(yAxis);
+
+        // CELLS
+        ////////
+
+        // Need to shift the y-axis by cellHeight so that (0,0) is within the cell
+        // Recall that the position of rect is determined by its top left corner
+        yShift = d3.scale.linear()
+        .domain([0, numVCells])
+        .range([vSize + padding / 2 - CELL_SIZE, padding / 2 - CELL_SIZE]);
+
+        // Populate with new data
+        var LAYER1_COLOR = "#9ecae1";
+        var LAYER2_COLOR = "#fdae6b";
+        svg.selectAll("rect")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("x", function(d) {
+          return x(d.x)})
+        .attr("y", function(d) {
+          return yShift(d.y)})
+        .attr("width", CELL_SIZE)
+        .attr("height", CELL_SIZE)
+        .attr("fill-opacity", 0.3)
+        .style("fill", function(d) {
+          if(d.attribute === -1) // Blockage
+            return d.layer === 1 ? LAYER1_COLOR : LAYER2_COLOR;
+          else
+            return "none";
+           });
+      }
+
+      var drawRoutes = function(data) {
+        var STROKE_WIDTH = 4;
+
+
+        var svg = d3.select("svg");
+        var color = d3.scale.category10();
+
+        if(svg) { // only perform if we have an existing grid from benchmark file 
+
+          // We want to connect dots from the center of the cells for nets
+          var xCenter = d3.scale.linear()
+          .domain([0, numHCells])
+          .range([padding / 2 + CELL_SIZE / 2, hSize + padding / 2 + CELL_SIZE / 2]);
+
+          var yCenter = d3.scale.linear()
+          .domain([0, numVCells])
+          .range([vSize + padding / 2 - CELL_SIZE / 2, padding / 2 - CELL_SIZE / 2]);
+
+          var routerPath = d3.svg.line()
+          .x(function(d) { 
+            return xCenter(d.x); })
+          .y(function(d) { 
+            return yCenter(d.y); })
+          .interpolate("linear");
+
+          svg.selectAll(".cell").remove(); // Clear previous routes, if any.
+
+          svg.selectAll(".cell")
+          .data(data)
+          .enter()
+          .append("g")
+            .attr("class", "cell")
+            .attr("stroke-opacity", 0.8)
+          .selectAll("path")
+          .data(createPathDataPoints)
+            .enter()
+            .append("path")
+            .attr("stroke-width", STROKE_WIDTH)
+            .attr("fill", "none")
+            .attr("stroke", function(d) { return d ? color(d.layer) : null;})
+            .attr("d", function(d){ return d ? routerPath(d.points) : null;});
+        }
+      }     
+
+      var createPathDataPoints = function(d) {   
+        var UNKNOWN_LAYER = -1;    
+        var processedData = [];
+        var index, x, y, currentLayerData, currentLayer = UNKNOWN_LAYER;
+
+        for(index = 0; index < d.points.length; index++) {
+          if(currentLayer === UNKNOWN_LAYER) {
+            currentLayer = d.points[index].layer;
+            currentLayerData = {layer: currentLayer, points: []};
+          }
+
+          if(d.points[index].layer === currentLayer) {
+            x = d.points[index].x;
+            y = d.points[index].y;
+            currentLayerData.points.push({x: x, y:y});
+          } else {
+            // Skips this layer via datapoint
+            // STRONG ASSUMPTION: All transitions between layers must be accompanied with a 
+            // via as mentioned in the write up
+            processedData.push(currentLayerData);
+            currentLayer = UNKNOWN_LAYER;
+            currentLayerData = null;
+          }
+        }
+
+        // There is the possibility that we never switch layers, in that case,
+        // push the value here
+        if(currentLayerData !== null) {
+          processedData.push(currentLayerData);
+        }
+
+        return processedData;
+      }
+      
+      return {
+        handleDragOver: handleDragOver,
+        handleFileSelectBenchmark: handleFileSelectBenchmark,
+        handleFileSelectRouter: handleFileSelectRouter
+      };
+
+    })()
+  }
+};
+
 if (window.File && window.FileReader && window.FileList && window.Blob) {
   // Great success! All the File APIs are supported.
 } else {
   alert('The File APIs are not fully supported in this browser. Consider using one from http://www.html5rocks.com/en/features/file_access');
 }
 
-
-// DRAG-N-DROP
-//////////////
-
-function handleFileSelectBenchmark(evt) {
-  evt.stopPropagation();
-  evt.preventDefault();
-
-  var files = evt.dataTransfer.files; // FileList object.
-
-  var gridFile = files[0];
-  var reader = new FileReader();
-
-  reader.onload = function(event) {
-    var NUM_LAYERS = 2;
-    var rawText = event.target.result;
-    var lines = rawText.split("\n");
-
-    var data = [];
-
-    var numVCells, numHCells, lineIndex, rawLine, splitData;
-
-    // First line specifies size of grid
-    splitData = lines[0].trim().split(/\s+/);
-    numHCells = parseInt(splitData[0]);
-    numVCells = parseInt(splitData[1]);
-
-    // Subsequent lines specify data for each grid
-    // We know that we have numVCells * NUM_LAYERS of lines to read
-    var currentX = 0, currentY = 0, layer = 1, attribute;
-    for(lineIndex = 1; lineIndex < numVCells * NUM_LAYERS; lineIndex++) {
-      rawLine = lines[lineIndex];
-      if(!isBlank(rawLine)) {
-        splitData = rawLine.trim().split(/\s+/);
-        for(currentX = 0; currentX < numHCells; currentX++) {
-          attribute = parseInt(splitData[currentX]);
-          data.push({x: currentX, y: currentY, layer: layer, attribute: attribute});
-        }
-      }
-
-      currentY++;
-      if(currentY === numVCells) {
-        currentY = 0;
-        layer++;
-      }
-    }
-
-    drawGrid(numHCells, numVCells, data);
-  };
-
-  reader.readAsText(gridFile);
-}
-
-var isBlank = function(string) {
-  return (!string || /^\s*$/.test(string));
-}
-
-var isNetStartingSymbol = function(string) {
-  var trimmed = string.trim();
-  return trimmed.split(/\s+/).length == 1
-         && trimmed.match(/\d+/) !== null
-         && !isNetTerminatingSymbol(string);
-}
-
-var isNetTerminatingSymbol = function(string) {
-  return string === '0';
-}
-
-var isPossibleRoutingCell  = function(string) {
-  return string.trim().split(/\s+/).length === 3;
-}
-
-function handleFileSelectRouter(evt) {
-  evt.stopPropagation();
-  evt.preventDefault();
-
-  var files = evt.dataTransfer.files; // FileList object.
-
-  // User can drag-n-drop multiple files at once so we pick only the first one.
-  // I don't know of a way to prevent drag-n-drop of multiple files at once.
-
-  var router = files[0];
-
-  var reader = new FileReader();
-  reader.onload = function(event) {
-    var rawText = event.target.result;
-    var lines = rawText.split("\n");
-
-    var data = [];
-    var numNets, netNumber, currentNetData, lineIndex, rawLine, splitData, layer, x, y;
-
-    // First line specify number of nets
-    numNets = parseInt(lines[0]); // No need to use it for now
-
-    // Subsequent lines specify the position routes (which cells are on)
-    for(lineIndex = 1; lineIndex < lines.length; lineIndex++) {
-      rawLine = lines[lineIndex];
-      if(!isBlank(rawLine)) {
-        if(isNetStartingSymbol(rawLine)) {
-          netNumber = parseInt(rawLine.trim());
-          currentNetData = {net: netNumber, points: []};
-        }
-        else if(isPossibleRoutingCell(rawLine)) {
-          splitData = rawLine.trim().split(/\s+/);
-          layer = parseInt(splitData[0]);
-          x = parseInt(splitData[1]);
-          y = parseInt(splitData[2]);
-          currentNetData['points'].push({layer: layer, x: x, y: y});
-        } else if(isNetTerminatingSymbol(rawLine)){
-          data.push(currentNetData);
-        } else {
-           // TODO: Throw some exception since we have found a line that doesn't match
-        }
-      }
-    }
-
-    drawRoutes(data);
-
-  };
-
-  reader.readAsText(router);
-}
-
-function handleDragOver(evt) {
-  evt.stopPropagation();
-  evt.preventDefault();
-  evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-}
-
 // Setup the dnd listeners.
 var benchmarkZone = document.getElementById('benchmark_zone');
-benchmarkZone.addEventListener('dragover', handleDragOver, false);
-benchmarkZone.addEventListener('drop', handleFileSelectBenchmark, false);
+benchmarkZone.addEventListener('dragover', edu.illinois.vlsicad.handleDragOver, false);
+benchmarkZone.addEventListener('drop', edu.illinois.vlsicad.handleFileSelectBenchmark, false);
 
 var routerZone = document.getElementById('router_zone');
-routerZone.addEventListener('dragover', handleDragOver, false);
-routerZone.addEventListener('drop', handleFileSelectRouter, false);
+routerZone.addEventListener('dragover', edu.illinois.vlsicad.handleDragOver, false);
+routerZone.addEventListener('drop', edu.illinois.vlsicad.handleFileSelectRouter, false);
 
-// VISUALIZATION
-////////////////
-
-// Local to this module
-// Shared variables between both drawing routines
-var x, y, yShift 
-var numHCells, numVCells;
-var hSize, vSize;
-var CELL_SIZE = 16;
-var padding;
-
-function drawGrid(_numHCells, _numVCells, data) {
-
-  d3.select("svg").remove();
-
-  padding = 50,
-  numHCells = _numHCells;
-  numVCells = _numVCells;
-  hSize = CELL_SIZE * numHCells,
-  vSize = CELL_SIZE * numVCells;
-
-  // SVG
-  //////
-
-  var svg = d3.select("body").append("svg")
-
-  // AXES
-  ////////
-
-  var SUBDIVISION = 5;
-
-  x = d3.scale.linear()
-  .domain([0, numHCells])
-  .range([padding / 2, hSize + padding / 2]);
-
-  y = d3.scale.linear()
-  .domain([0, numVCells])
-  .range([vSize + padding / 2, padding / 2]);
-
-  var xAxis = d3.svg.axis()
-  .scale(x)
-  .orient("bottom")
-  .ticks(numHCells / SUBDIVISION)
-  .tickSubdivide(SUBDIVISION - 1)
-  .tickSize(-(vSize + padding));
-
-  var spacer = 20; // The y-axis display needs a bit more room to display since it is left flushed
-
-  var yAxis = d3.svg.axis()
-  .scale(y)
-  .orient("left")
-  .ticks(numVCells / SUBDIVISION)
-  .tickSubdivide(SUBDIVISION - 1)
-  .tickSize(-(hSize + padding - spacer));
-
-  svg.attr("width", hSize + padding * 2)
-  .attr("height", vSize + padding * 2)
-  .append("g")
-  .attr("transform", "translate(" + padding / 2 + "," + padding / 2 + ")");
-
-  var xAxisGroup = svg.append("g")
-  .attr("class", "x axis")
-  .attr("transform", "translate(0," + (vSize + padding) + ")")
-  .call(xAxis);
-
-  var yAxisGroup = svg.append("g")
-  .attr("class", "y axis")
-  .attr("transform", "translate(" + 20 + ",0)")
-  .call(yAxis);
-
-  // CELLS
-  ////////
-
-  // Need to shift the y-axis by cellHeight so that (0,0) is within the cell
-  // Recall that the position of rect is determined by its top left corner
-  yShift = d3.scale.linear()
-  .domain([0, numVCells])
-  .range([vSize + padding / 2 - CELL_SIZE, padding / 2 - CELL_SIZE]);
-
-  // Populate with new data
-  var LAYER1_COLOR = "#9ecae1";
-  var LAYER2_COLOR = "#fdae6b";
-  svg.selectAll("rect")
-  .data(data)
-  .enter()
-  .append("rect")
-  .attr("x", function(d) {
-    return x(d.x)})
-  .attr("y", function(d) {
-    return yShift(d.y)})
-  .attr("width", CELL_SIZE)
-  .attr("height", CELL_SIZE)
-  .attr("fill-opacity", 0.3)
-  .style("fill", function(d) {
-    if(d.attribute === -1) // Blockage
-      return d.layer === 1 ? LAYER1_COLOR : LAYER2_COLOR;
-    else
-      return "none";
-     });
-}
-
-function drawRoutes(data) {
-  var STROKE_WIDTH = 4;
-  var VIA_LAYER = 3;
-  var UNKNOWN_LAYER = -1;
-
-  var svg = d3.select("svg");
-  var color = d3.scale.category10();
-
-  if(svg) { // only perform if we have an existing grid from benchmark file 
-
-    // We want to connect dots from the center of the cells for nets
-    var xCenter = d3.scale.linear()
-    .domain([0, numHCells])
-    .range([padding / 2 + CELL_SIZE / 2, hSize + padding / 2 + CELL_SIZE / 2]);
-
-    var yCenter = d3.scale.linear()
-    .domain([0, numVCells])
-    .range([vSize + padding / 2 - CELL_SIZE / 2, padding / 2 - CELL_SIZE / 2]);
-
-    var routerPath = d3.svg.line()
-    .x(function(d) { 
-      return xCenter(d.x); })
-    .y(function(d) { 
-      return yCenter(d.y); })
-    .interpolate("linear");
-
-    svg.selectAll(".cell").remove(); // Clear previous routes, if any.
-
-    svg.selectAll(".cell")
-    .data(data)
-    .enter()
-    .append("g")
-      .attr("class", "cell")
-      .attr("stroke-opacity", 0.8)
-    .selectAll("path")
-    .data(function(d) {
-      var processedData = [];
-      var index, x, y, currentLayerData, currentLayer = UNKNOWN_LAYER;
-
-      for(index = 0; index < d.points.length; index++) {
-        if(currentLayer === UNKNOWN_LAYER) {
-          currentLayer = d.points[index].layer;
-          currentLayerData = {layer: currentLayer, points: []};
-        }
-
-        if(d.points[index].layer === currentLayer) {
-          x = d.points[index].x;
-          y = d.points[index].y;
-          currentLayerData.points.push({x: x, y:y});
-        } else {
-          // Skips this layer via datapoint
-          // STRONG ASSUMPTION: All transitions between layers must be accompanied with a 
-          // via as mentioned in the write up
-          processedData.push(currentLayerData);
-          currentLayer = UNKNOWN_LAYER;
-          currentLayerData = null;
-        }
-      }
-
-      // There is the possibility that we never switch layers, in that case,
-      // push the value here
-      if(currentLayerData !== null) {
-        processedData.push(currentLayerData);
-      }
-
-      return processedData;
-    })
-      .enter()
-      .append("path")
-      .attr("stroke-width", STROKE_WIDTH)
-      .attr("fill", "none")
-      .attr("stroke", function(d) { return d ? color(d.layer) : null;})
-      .attr("d", function(d){ return d ? routerPath(d.points) : null;});
-  }
-}
 
 </script>
 </body>
