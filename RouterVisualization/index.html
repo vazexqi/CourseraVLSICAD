@@ -315,7 +315,7 @@ var edu = {
       }
 
       var drawCells = function(data){
-	      // CELLS
+        // CELLS
         ////////
 
         var svg = d3.select("svg");
@@ -530,10 +530,33 @@ var edu = {
         return viaPoints;
       }
 
+      // TOGGLE LAYERS
+      /////////////////
+
+      var toggleFunctionFactory = function(CSSClass) {
+        var isDisplayed = true;
+        var localClass = CSSClass;
+        return function() {
+          var svg = d3.select("svg");
+          var elements = svg.selectAll(localClass);
+          if(isDisplayed) {
+             elements.style("visibility", "hidden");
+             isDisplayed = false;
+          } else {
+             elements.style("visibility", "visible");
+             isDisplayed = true;
+          }
+        };
+      }
+
       return {
         handleDragOver: handleDragOver,
         handleFileSelectBenchmark: handleFileSelectBenchmark,
-        handleFileSelectRouter: handleFileSelectRouter
+        handleFileSelectRouter: handleFileSelectRouter,
+        toggleLayer1CostCells: toggleFunctionFactory(".layer1_cost"),
+        toggleLayer1ObstacleCells: toggleFunctionFactory(".layer1_obstacles"),
+        toggleLayer2CostCells: toggleFunctionFactory(".layer2_cost"),
+        toggleLayer2ObstacleCells: toggleFunctionFactory(".layer2_obstacles")
       };
 
     })()
