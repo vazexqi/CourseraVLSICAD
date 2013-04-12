@@ -4,6 +4,8 @@ Modified and derived from
 <http://bl.ocks.org/mbostock/4063663>
 <http://www.carto.net/papers/svg/samples/patterns.shtml>
 
+Use $.contextMenu jQuery plug-in from <https://github.com/medialize/jQuery-contextMenu>
+
 Code by the Illinois VLSI CAD teaching staff.
 Released under the University of Illinois/NCSA Open Source License
 -->
@@ -15,8 +17,12 @@ Released under the University of Illinois/NCSA Open Source License
 <title>
   Visualize Routes for Programming Assignment #4
 </title>
-<!-- Serve locally because we need https-->
+
+<!-- Serve locally because we need https from inner frame in Google Chrome-->
 <script type="text/javascript" src="https://spark-public.s3.amazonaws.com/vlsicad/javascript_tools/d3.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="https://spark-public.s3.amazonaws.com/vlsicad/javascript_tools/contextMenu.js" charset="utf-8"></script>
+
+<link type="text/css" rel="stylesheet" href="https://spark-public.s3.amazonaws.com/vlsicad/javascript_tools/jQuery.contextMenu.css"></link>
 
 <style>
   /* For drag-n-drop */
@@ -578,6 +584,46 @@ var routerZone = document.getElementById('router_zone');
 routerZone.addEventListener('dragover', edu.illinois.vlsicad.handleDragOver, false);
 routerZone.addEventListener('drop', edu.illinois.vlsicad.handleFileSelectRouter, false);
 
+// Setup the right-click menu
+$(function(){
+    $.contextMenu({
+        selector: 'svg', 
+        callback: function(key, options) {
+          switch(key)
+          {
+          case 'layer1-toggle-obstacle':
+            edu.illinois.vlsicad.toggleLayer1ObstacleCells();
+            break;
+          case 'layer2-toggle-obstacle':
+            edu.illinois.vlsicad.toggleLayer1ObstacleCells();
+            break;
+          case 'layer1-toggle-cost':
+            edu.illinois.vlsicad.toggleLayer1CostCells();
+            break;
+          case 'layer2-toggle-cost':
+            edu.illinois.vlsicad.toggleLayer2CostCells();
+            break;
+          default:
+          }
+        },
+        items: {
+            "layer1": {
+                "name": "Layer 1", 
+                "items": {
+                    "layer1-toggle-obstacle": {"name": "Toggle obstacle cells"},
+                    "layer1-toggle-cost": {"name": "Toggle non-unit cost cells"},
+                }
+            },
+            "layer2": {
+                "name": "Layer 2", 
+                "items": {
+                    "layer2-toggle-obstacle": {"name": "Toggle obstacle cells"},
+                    "layer2-toggle-cost": {"name": "Toggle non-unit cost cells"},
+                }
+            },
+        }
+    });
+});
 
 </script>
 </body>
