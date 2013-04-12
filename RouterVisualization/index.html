@@ -241,6 +241,8 @@ function drawGrid(_numHCells, _numVCells, data) {
   // AXES
   ////////
 
+  var SUBDIVISION = 5;
+
   x = d3.scale.linear()
   .domain([0, numHCells])
   .range([padding / 2, hSize + padding / 2]);
@@ -252,7 +254,8 @@ function drawGrid(_numHCells, _numVCells, data) {
   var xAxis = d3.svg.axis()
   .scale(x)
   .orient("bottom")
-  .ticks(numHCells)
+  .ticks(numHCells / SUBDIVISION)
+  .tickSubdivide(SUBDIVISION - 1)
   .tickSize(-(vSize + padding));
 
   var spacer = 20; // The y-axis display needs a bit more room to display since it is left flushed
@@ -260,7 +263,8 @@ function drawGrid(_numHCells, _numVCells, data) {
   var yAxis = d3.svg.axis()
   .scale(y)
   .orient("left")
-  .ticks(numVCells)
+  .ticks(numVCells / SUBDIVISION)
+  .tickSubdivide(SUBDIVISION - 1)
   .tickSize(-(hSize + padding - spacer));
 
   svg.attr("width", hSize + padding * 2)
