@@ -58,21 +58,19 @@ Released under the University of Illinois/NCSA Open Source License
   }
 
   /* Placeholder to facilite selection of route elements */
-  .routes {
-    /* Denotes the routes */
-  }
+  .layer1_obstacles {} /* Denotes obstacles */
+  .layer1_cost {} /* Denotes non-unit grids */
+  
+  .layer2_obstacles {} /* Denote obstacles */
+  .layer2_cost {} /* Denotes non-unit grids */
+  
+  .routes {} /* Denotes the routes */
 
-  .vias {
-    /* Denotes the via markers */
-  }
+  .vias {} /* Denotes the via markers */
 
-  .startPositionMarkers {
-    /* Denotes the start markers */
-  }
+  .startPositionMarkers {} /* Denotes the start markers */
 
-  .endPositionMarkers {
-    /* Denotes the end markers */
-  }
+  .endPositionMarkers {} /* Denotes the end markers */
 </style>
 </head>
 <body>
@@ -240,11 +238,17 @@ var edu = {
         //////
 
         var svg = d3.select("body").append("svg")
+        drawAxes(data);
+        drawCells(data);
+      }
 
+      var drawAxes = function(data) {
         // AXES
         ////////
 
         var SUBDIVISION = 5;
+
+        var svg = d3.select("svg");
 
         x = d3.scale.linear()
         .domain([0, numHCells])
@@ -308,9 +312,13 @@ var edu = {
         .attr("class", "y axis")
         .attr("transform", "translate(" + spacer + ",0)")
         .call(yAxisRight);
+      }
 
-        // CELLS
+      var drawCells = function(data){
+	      // CELLS
         ////////
+
+        var svg = d3.select("svg");
 
         // Need to shift the y-axis by cellHeight so that (0,0) is within the cell
         // Recall that the position of rect is determined by its top left corner
@@ -321,6 +329,10 @@ var edu = {
         // Populate with new data
         var LAYER1_COLOR = "#9ecae1";
         var LAYER2_COLOR = "#fdae6b";
+        var grayScale = d3.scale.linear()
+            .domain([1, 50])
+            .range(["white", "black"]);
+
         svg.selectAll("rect")
         .data(data)
         .enter()
@@ -332,12 +344,20 @@ var edu = {
         .attr("width", CELL_SIZE)
         .attr("height", CELL_SIZE)
         .attr("fill-opacity", 0.3)
+        .attr("class", function(d) {
+          if(d.attribute === -1) // Blockage
+            return d.layer === 1 ?  "layer1_obstacles" : "layer2_obstacles";
+          else
+            return d.layer === 1 ?  "layer1_cost" : "layer2_cost";
+         })
         .style("fill", function(d) {
           if(d.attribute === -1) // Blockage
             return d.layer === 1 ? LAYER1_COLOR : LAYER2_COLOR;
+          else if(d.attribute !== 1)
+            return grayScale(d.attribute);
           else
-            return "none";
-           });
+            return "none"; // Special case unit-cost so that we don't have off white colors
+         });
       }
 
       var xCenter, yCenter; // Functions that will be used in the drawing routines
@@ -432,7 +452,7 @@ var edu = {
         .attr("d", d3.svg.symbol().type(END_MARKER).size(128));
       }
 
-      var drawVias =  function(data) {
+      var drawVias = function(data) {
         var svg = d3.select("svg");
 
         svg.selectAll(".vias").remove(); // Clear previous vias, if any
