@@ -217,7 +217,7 @@ var edu = {
 
         d3.select("svg").remove();
 
-        padding = 50,
+        padding = 70,
         numHCells = _numHCells;
         numVCells = _numVCells;
         hSize = CELL_SIZE * numHCells,
@@ -241,36 +241,60 @@ var edu = {
         .domain([0, numVCells])
         .range([vSize + padding / 2, padding / 2]);
 
-        var xAxis = d3.svg.axis()
+        var xAxisBottom = d3.svg.axis()
         .scale(x)
         .orient("bottom")
         .ticks(numHCells / SUBDIVISION)
         .tickSubdivide(SUBDIVISION - 1)
-        .tickSize(-(vSize + padding));
+        .tickSize(-(vSize + padding / 2));
+
+        var xAxisTop = d3.svg.axis()
+        .scale(x)
+        .orient("top")
+        .ticks(numHCells / SUBDIVISION)
+        .tickSubdivide(SUBDIVISION - 1)
+        .tickSize((vSize + padding / 2));
 
         var spacer = 20; // The y-axis display needs a bit more room to display since it is left flushed
 
-        var yAxis = d3.svg.axis()
+        var yAxisLeft = d3.svg.axis()
         .scale(y)
         .orient("left")
         .ticks(numVCells / SUBDIVISION)
         .tickSubdivide(SUBDIVISION - 1)
-        .tickSize(-(hSize + padding - spacer));
+        .tickSize(-(hSize + padding / 2));
+
+        var yAxisRight = d3.svg.axis()
+        .scale(y)
+        .orient("right")
+        .ticks(numVCells / SUBDIVISION)
+        .tickSubdivide(SUBDIVISION - 1)
+        .tickSize((hSize + padding / 2));
 
         svg.attr("width", hSize + padding * 2)
         .attr("height", vSize + padding * 2)
         .append("g")
         .attr("transform", "translate(" + padding / 2 + "," + padding / 2 + ")");
 
-        var xAxisGroup = svg.append("g")
+        var xAxisBottomGroup = svg.append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(0," + (vSize + padding) + ")")
-        .call(xAxis);
+        .attr("transform", "translate(0," + (vSize + padding / 2 + spacer) + ")")
+        .call(xAxisBottom);
 
-        var yAxisGroup = svg.append("g")
+        var xAxisTopGroup = svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + (vSize + padding / 2 + spacer) + ")")
+        .call(xAxisTop);
+
+        var yAxisLeftGroup = svg.append("g")
         .attr("class", "y axis")
-        .attr("transform", "translate(" + 20 + ",0)")
-        .call(yAxis);
+        .attr("transform", "translate(" + spacer + ",0)")
+        .call(yAxisLeft);
+
+        var yAxisRightGroup = svg.append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(" + spacer + ",0)")
+        .call(yAxisRight);
 
         // CELLS
         ////////
