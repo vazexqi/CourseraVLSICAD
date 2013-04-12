@@ -57,12 +57,21 @@ Released under the University of Illinois/NCSA Open Source License
       stroke: #aaa;
   }
 
+  /* Placeholder to facilite selection of route elements */
   .routes {
-      /* Placeholder to facilite selection of route elements */
+    /* Denotes the routes */
   }
 
   .vias {
-      /* Placeholder to facilite selection of via elements */
+    /* Denotes the via markers */
+  }
+
+  .startPositionMarkers {
+    /* Denotes the start markers */
+  }
+
+  .endPositionMarkers {
+    /* Denotes the end markers */
   }
 </style>
 </head>
@@ -331,11 +340,21 @@ var edu = {
            });
       }
 
+      var xCenter, yCenter; // Functions that will be used in the drawing routines
+
       var drawRoutes = function(data) {
+        xCenter = d3.scale.linear()
+        .domain([0, numHCells])
+        .range([padding / 2 + CELL_SIZE / 2, hSize + padding / 2 + CELL_SIZE / 2]);
+
+        yCenter = d3.scale.linear()
+        .domain([0, numVCells])
+        .range([vSize + padding / 2 - CELL_SIZE / 2, padding / 2 - CELL_SIZE / 2]);
 
         var svg = d3.select("svg");
         if(svg) { // only perform if we have an existing grid from benchmark file 
           drawPaths(data); // Draw the normal routes
+          markStartAndEndForPath(data); // Explicitly show the start and end points for routes
           drawVias(data); // Explicitly show via points as well
         }
       }
@@ -344,14 +363,6 @@ var edu = {
         var STROKE_WIDTH = 4;
         var svg = d3.select("svg");
         var color = d3.scale.category10();
-
-        var xCenter = d3.scale.linear()
-        .domain([0, numHCells])
-        .range([padding / 2 + CELL_SIZE / 2, hSize + padding / 2 + CELL_SIZE / 2]);
-
-        var yCenter = d3.scale.linear()
-        .domain([0, numVCells])
-        .range([vSize + padding / 2 - CELL_SIZE / 2, padding / 2 - CELL_SIZE / 2]);
 
         var routerPath = d3.svg.line()
         .x(function(d) { 
@@ -378,16 +389,51 @@ var edu = {
           .attr("d", function(d){ return d ? routerPath(d.points) : null;});
       }
 
+      var markStartAndEndForPath = function(data) {
+        var START_MARKER = "square";
+        var START_COLOR = "#2ca02c";
+        var END_MARKER = "square";
+        var END_COLOR = "#d62728";
+        var STROKE_WIDTH = 2;
+
+        var svg = d3.select("svg");
+        var color = d3.scale.category20();
+
+        svg.selectAll(".startPositionMarkers").remove(); // Clear previous markers, if any
+        svg.selectAll(".endPositionMarkers").remove(); // Clear previous markers, if any
+
+
+        // Draw start
+        svg.selectAll(".startPositionMarkers")
+        .data(filterPoints(data, function(array) { return array[0]; }))
+        .enter()
+        .append("path")
+        .attr("stroke-width", STROKE_WIDTH) 
+        .attr("stroke", START_COLOR)
+        .attr("fill", "none")
+        .attr("class", "startPositionMarkers")
+        .attr("transform", function(d) { 
+          return "translate(" + xCenter(d.x) + "," + yCenter(d.y) + ")"; 
+        })
+        .attr("d", d3.svg.symbol().type(START_MARKER).size(128));
+
+        // Draw end
+        svg.selectAll(".endPositionMarkers")
+        .data(filterPoints(data, function(array) { return array[array.length - 1]; }))
+        .enter()
+        .append("path")
+        .attr("stroke-width", STROKE_WIDTH) 
+        .attr("stroke", END_COLOR)
+        .attr("fill", "none")
+        .attr("class", "endPositionMarkers")
+        .attr("transform", function(d) { 
+            return "translate(" + xCenter(d.x) + "," + yCenter(d.y) + ")"; 
+        })
+        .attr("d", d3.svg.symbol().type(END_MARKER).size(128));
+      }
+
       var drawVias =  function(data) {
         var svg = d3.select("svg");
-
-        var xCenter = d3.scale.linear()
-        .domain([0, numHCells])
-        .range([padding / 2 + CELL_SIZE / 2, hSize + padding / 2 + CELL_SIZE / 2]);
-
-        var yCenter = d3.scale.linear()
-        .domain([0, numVCells])
-        .range([vSize + padding / 2 - CELL_SIZE / 2, padding / 2 - CELL_SIZE / 2]);
 
         svg.selectAll(".vias").remove(); // Clear previous vias, if any
 
@@ -433,6 +479,19 @@ var edu = {
         }
 
         return processedData;
+      }
+
+      var filterPoints = function(d, filterFn) {
+        var points = [];
+
+        d.forEach(function(element, index, array) {
+          if(element.points.length !== 0) {
+            var pointData = filterFn(element.points);
+            points.push({x: pointData.x, y: pointData.y});
+          }
+        });
+
+        return points;
       }
 
       var filterViaPoints = function(d) {
