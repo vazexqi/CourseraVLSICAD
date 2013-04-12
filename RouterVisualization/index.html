@@ -57,8 +57,12 @@ Released under the University of Illinois/NCSA Open Source License
       stroke: #aaa;
   }
 
-  .cell {
-      /*Placeholder to facilite selection*/
+  .routes {
+      /* Placeholder to facilite selection of route elements */
+  }
+
+  .vias {
+      /* Placeholder to facilite selection of via elements */
   }
 </style>
 </head>
@@ -75,7 +79,7 @@ var edu = {
       //////////////
       // DRAG-N-DROP
       //////////////
-      
+
       var handleFileSelectBenchmark = function(evt) {
         evt.stopPropagation();
         evt.preventDefault();
@@ -328,51 +332,77 @@ var edu = {
       }
 
       var drawRoutes = function(data) {
+
+        var svg = d3.select("svg");
+        if(svg) { // only perform if we have an existing grid from benchmark file 
+          drawPaths(data); // Draw the normal routes
+          drawVias(data); // Explicitly show via points as well
+        }
+      }
+
+      var drawPaths = function(data) {
         var STROKE_WIDTH = 4;
-
-
         var svg = d3.select("svg");
         var color = d3.scale.category10();
 
-        if(svg) { // only perform if we have an existing grid from benchmark file 
+        var xCenter = d3.scale.linear()
+        .domain([0, numHCells])
+        .range([padding / 2 + CELL_SIZE / 2, hSize + padding / 2 + CELL_SIZE / 2]);
 
-          // We want to connect dots from the center of the cells for nets
-          var xCenter = d3.scale.linear()
-          .domain([0, numHCells])
-          .range([padding / 2 + CELL_SIZE / 2, hSize + padding / 2 + CELL_SIZE / 2]);
+        var yCenter = d3.scale.linear()
+        .domain([0, numVCells])
+        .range([vSize + padding / 2 - CELL_SIZE / 2, padding / 2 - CELL_SIZE / 2]);
 
-          var yCenter = d3.scale.linear()
-          .domain([0, numVCells])
-          .range([vSize + padding / 2 - CELL_SIZE / 2, padding / 2 - CELL_SIZE / 2]);
+        var routerPath = d3.svg.line()
+        .x(function(d) { 
+          return xCenter(d.x); })
+        .y(function(d) { 
+          return yCenter(d.y); })
+        .interpolate("linear");
 
-          var routerPath = d3.svg.line()
-          .x(function(d) { 
-            return xCenter(d.x); })
-          .y(function(d) { 
-            return yCenter(d.y); })
-          .interpolate("linear");
+        svg.selectAll(".cells").remove(); // Clear previous routes, if any.
 
-          svg.selectAll(".cell").remove(); // Clear previous routes, if any.
-
-          svg.selectAll(".cell")
-          .data(data)
+        svg.selectAll(".cells")
+        .data(data)
+        .enter()
+        .append("g")
+          .attr("class", "cells")
+          .attr("stroke-opacity", 0.8)
+        .selectAll("path")
+        .data(createPathDataPoints)
           .enter()
-          .append("g")
-            .attr("class", "cell")
-            .attr("stroke-opacity", 0.8)
-          .selectAll("path")
-          .data(createPathDataPoints)
-            .enter()
-            .append("path")
-            .attr("stroke-width", STROKE_WIDTH)
-            .attr("fill", "none")
-            .attr("stroke", function(d) { return d ? color(d.layer) : null;})
-            .attr("d", function(d){ return d ? routerPath(d.points) : null;});
-        }
-      }     
+          .append("path")
+          .attr("stroke-width", STROKE_WIDTH)
+          .attr("fill", "none")
+          .attr("stroke", function(d) { return d ? color(d.layer) : null;})
+          .attr("d", function(d){ return d ? routerPath(d.points) : null;});
+      }
 
-      var createPathDataPoints = function(d) {   
-        var UNKNOWN_LAYER = -1;    
+      var drawVias =  function(data) {
+        var svg = d3.select("svg");
+
+        var xCenter = d3.scale.linear()
+        .domain([0, numHCells])
+        .range([padding / 2 + CELL_SIZE / 2, hSize + padding / 2 + CELL_SIZE / 2]);
+
+        var yCenter = d3.scale.linear()
+        .domain([0, numVCells])
+        .range([vSize + padding / 2 - CELL_SIZE / 2, padding / 2 - CELL_SIZE / 2]);
+
+        svg.selectAll(".vias").remove(); // Clear previous vias, if any
+
+        svg.selectAll(".vias")
+        .data(filterViaPoints(data))
+        .enter()
+        .append("path")
+        .attr("class", "vias")
+        .attr("transform", function(d) { return "translate(" + xCenter(d.x) + "," + yCenter(d.y) + ")"; })
+        .attr("d", d3.svg.symbol().type("cross"));
+
+      }
+
+      var createPathDataPoints = function(d) {
+        var UNKNOWN_LAYER = -1;
         var processedData = [];
         var index, x, y, currentLayerData, currentLayer = UNKNOWN_LAYER;
 
@@ -404,7 +434,23 @@ var edu = {
 
         return processedData;
       }
-      
+
+      var filterViaPoints = function(d) {
+        var VIA_LAYER = 3;
+        var viaPoints = [];
+
+        d.forEach(function(element, index, array) {
+          element.points.forEach(function(element, index, array) {
+            if(element.layer === VIA_LAYER) {
+              viaPoints.push({x: element.x, y: element.y});
+            }
+          });
+        });
+
+
+        return viaPoints;
+      }
+
       return {
         handleDragOver: handleDragOver,
         handleFileSelectBenchmark: handleFileSelectBenchmark,
