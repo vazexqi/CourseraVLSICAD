@@ -2,9 +2,9 @@
 Modified and derived from
 <http://www.html5rocks.com/en/tutorials/file/dndfiles/#toc-selecting-files-dnd>
 <http://bl.ocks.org/mbostock/4063663>
-<http://www.carto.net/papers/svg/samples/patterns.shtml>
 
-Use $.contextMenu jQuery plug-in from <https://github.com/medialize/jQuery-contextMenu>
+Uses $.contextMenu jQuery plug-in from <https://github.com/medialize/jQuery-contextMenu>
+It's dual licensed so we are choosing its MIT License option.
 
 Code by the Illinois VLSI CAD teaching staff.
 Released under the University of Illinois/NCSA Open Source License
@@ -18,10 +18,11 @@ Released under the University of Illinois/NCSA Open Source License
   Visualize Routes for Programming Assignment #4
 </title>
 
-<!-- Serve locally because we need https from inner frame in Google Chrome-->
+<!-- Serve locally because we need https from inner frame (if we use it) in Google Chrome-->
 <script type="text/javascript" src="https://spark-public.s3.amazonaws.com/vlsicad/javascript_tools/d3.min.js" charset="utf-8"></script>
 <script type="text/javascript" src="https://spark-public.s3.amazonaws.com/vlsicad/javascript_tools/contextMenu.js" charset="utf-8"></script>
 
+<!-- This is the CSS needed for right-click menu -->
 <link type="text/css" rel="stylesheet" href="https://spark-public.s3.amazonaws.com/vlsicad/javascript_tools/jQuery.contextMenu.css"></link>
 
 <style>
@@ -75,7 +76,6 @@ Released under the University of Illinois/NCSA Open Source License
   .vias {} /* Denotes the via markers */
 
   .startPositionMarkers {} /* Denotes the start markers */
-
   .endPositionMarkers {} /* Denotes the end markers */
 </style>
 </head>
@@ -333,8 +333,8 @@ var edu = {
         .range([vSize + padding / 2 - CELL_SIZE, padding / 2 - CELL_SIZE]);
 
         // Populate with new data
-        var LAYER1_COLOR = "#9ecae1";
-        var LAYER2_COLOR = "#fdae6b";
+        var LAYER1_COLOR = "#9ecae1"; // Blue
+        var LAYER2_COLOR = "#fdae6b"; // Orange
         var grayScale = d3.scale.linear()
             .domain([1, 50])
             .range(["white", "black"]);
@@ -417,9 +417,9 @@ var edu = {
 
       var markStartAndEndForPath = function(data) {
         var START_MARKER = "square";
-        var START_COLOR = "#2ca02c";
+        var START_COLOR = "#2ca02c"; // Green
         var END_MARKER = "square";
-        var END_COLOR = "#d62728";
+        var END_COLOR = "#d62728"; // Red
         var STROKE_WIDTH = 2;
 
         var svg = d3.select("svg");
