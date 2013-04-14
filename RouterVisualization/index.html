@@ -571,9 +571,7 @@ var edu = {
         handleDragOver: handleDragOver,
         handleFileSelectBenchmark: handleFileSelectBenchmark,
         handleFileSelectRouter: handleFileSelectRouter,
-        toggleLayer1CostCells: toggleFunctionFactory(".layer1_cost"),
         toggleLayer1ObstacleCells: toggleFunctionFactory(".layer1_obstacles"),
-        toggleLayer2CostCells: toggleFunctionFactory(".layer2_cost"),
         toggleLayer2ObstacleCells: toggleFunctionFactory(".layer2_obstacles")
       };
 
@@ -609,28 +607,18 @@ $(function(){
           case 'layer2-toggle-obstacle':
             edu.illinois.vlsicad.toggleLayer2ObstacleCells();
             break;
-          case 'layer1-toggle-cost':
-            edu.illinois.vlsicad.toggleLayer1CostCells();
-            break;
-          case 'layer2-toggle-cost':
-            edu.illinois.vlsicad.toggleLayer2CostCells();
-            break;
           default:
           }
         },
+        // There is a bug with the current version of contextMenu. If you don't have
+        // submenus, the evt is fired twice in quick succession. That is why we have
+        // submenus even though it is unneccessary
         items: {
-            "layer1": {
-                "name": "Layer 1", 
+            "obstacles": {
+                "name": "Obstacles", 
                 "items": {
-                    "layer1-toggle-obstacle": {"name": "Toggle obstacle cells"},
-                    "layer1-toggle-cost": {"name": "Toggle non-unit cost cells"},
-                }
-            },
-            "layer2": {
-                "name": "Layer 2", 
-                "items": {
-                    "layer2-toggle-obstacle": {"name": "Toggle obstacle cells"},
-                    "layer2-toggle-cost": {"name": "Toggle non-unit cost cells"},
+                    "layer1-toggle-obstacle": {"name": "Toggle Layer 1 Obstacles"},
+                    "layer2-toggle-obstacle": {"name": "Toggle Layer 2 Obstacles"},
                 }
             },
         }
