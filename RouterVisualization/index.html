@@ -425,6 +425,8 @@ var edu = {
 
         svg.selectAll(".cells").remove(); // Clear previous routes, if any.
 
+        d3.selectAll(".tooltip").remove(); // Clear previous tooltips, if any
+        
         var div = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
