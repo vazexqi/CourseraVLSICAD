@@ -64,6 +64,20 @@ Released under the University of Illinois/NCSA Open Source License
       stroke: #aaa;
   }
 
+  /* For tooltip */
+  div.tooltip {
+    position: absolute;
+    text-align: center;
+    width: 70px;
+    height: 10px;
+    padding: 8px;
+    font: 10px sans-serif;
+    background: #ddd;
+    border: solid 1px #aaa;
+    border-radius: 5px;
+    pointer-events: none;
+  }
+
   /* Placeholder to facilite selection of route elements */
   .layer1_obstacles {} /* Denotes obstacles */
   .layer1_cost {} /* Denotes non-unit grids */
@@ -322,12 +336,12 @@ var edu = {
         // Shift the text so that the are in the middle of the grid
         svg.selectAll(".yaxis text")
         .attr("transform", function(d) {
-	      	return "translate(0," + -(CELL_SIZE / 2) + ")";
+          return "translate(0," + -(CELL_SIZE / 2) + ")";
         });
 
         svg.selectAll(".xaxis text")
         .attr("transform", function(d) {
-	      	return "translate(" + (CELL_SIZE / 2) + ",0)";
+          return "translate(" + (CELL_SIZE / 2) + ",0)";
         });
 
       }
@@ -411,6 +425,10 @@ var edu = {
 
         svg.selectAll(".cells").remove(); // Clear previous routes, if any.
 
+        var div = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
         svg.selectAll(".cells")
         .data(data)
         .enter()
@@ -424,7 +442,21 @@ var edu = {
           .attr("stroke-width", STROKE_WIDTH)
           .attr("fill", "none")
           .attr("stroke", function(d) { return d ? color(d.layer) : null;})
-          .attr("d", function(d){ return d ? routerPath(d.points) : null;});
+          .attr("d", function(d){ return d ? routerPath(d.points) : null;})
+          .on("mouseover", function(d) {
+            div.transition()
+            .duration(10)
+            .style("opacity", 0.8);
+
+            div.html("Net #" + d.net)
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY) + "px");
+          })
+          .on("mouseout", function(d) {
+            div.transition()
+            .duration(10)
+            .style("opacity", 0);
+          });
       }
 
       var markStartAndEndForPath = function(data) {
@@ -493,7 +525,7 @@ var edu = {
         for(index = 0; index < d.points.length; index++) {
           if(currentLayer === UNKNOWN_LAYER) {
             currentLayer = d.points[index].layer;
-            currentLayerData = {layer: currentLayer, points: []};
+            currentLayerData = {layer: currentLayer, net: d.net, points: []};
           }
 
           if(d.points[index].layer === currentLayer) {
