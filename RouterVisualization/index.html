@@ -300,24 +300,36 @@ var edu = {
         .attr("transform", "translate(" + padding / 2 + "," + padding / 2 + ")");
 
         var xAxisBottomGroup = svg.append("g")
-        .attr("class", "x axis")
+        .attr("class", "xaxis axis")
         .attr("transform", "translate(0," + (vSize + padding / 2 + spacer) + ")")
         .call(xAxisBottom);
 
         var xAxisTopGroup = svg.append("g")
-        .attr("class", "x axis")
+        .attr("class", "xaxis axis")
         .attr("transform", "translate(0," + (vSize + padding / 2 + spacer) + ")")
         .call(xAxisTop);
 
         var yAxisLeftGroup = svg.append("g")
-        .attr("class", "y axis")
+        .attr("class", "yaxis axis")
         .attr("transform", "translate(" + spacer + ",0)")
         .call(yAxisLeft);
 
         var yAxisRightGroup = svg.append("g")
-        .attr("class", "y axis")
+        .attr("class", "yaxis axis")
         .attr("transform", "translate(" + spacer + ",0)")
         .call(yAxisRight);
+
+        // Shift the text so that the are in the middle of the grid
+        svg.selectAll(".yaxis text")
+        .attr("transform", function(d) {
+	      	return "translate(0," + -(CELL_SIZE / 2) + ")";
+        });
+
+        svg.selectAll(".xaxis text")
+        .attr("transform", function(d) {
+	      	return "translate(" + (CELL_SIZE / 2) + ",0)";
+        });
+
       }
 
       var drawCells = function(data){
@@ -336,7 +348,7 @@ var edu = {
         var LAYER1_COLOR = "#9ecae1"; // Blue
         var LAYER2_COLOR = "#fdae6b"; // Orange
         var grayScale = d3.scale.linear()
-            .domain([1, 50])
+            .domain([1, 40])
             .range(["white", "black"]);
 
         svg.selectAll("rect")
