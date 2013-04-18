@@ -362,34 +362,40 @@ var edu = {
         var LAYER1_COLOR = "#9ecae1"; // Blue
         var LAYER2_COLOR = "#fdae6b"; // Orange
         var grayScale = d3.scale.linear()
-            .domain([1, 40])
-            .range(["white", "black"]);
+        .domain([1, 40])
+        .range(["white", "black"]);
 
         svg.selectAll("rect")
-        .data(data)
+        .data(removeEmptyData(data))
         .enter()
         .append("rect")
         .attr("x", function(d) {
           return x(d.x)})
-        .attr("y", function(d) {
-          return yShift(d.y)})
-        .attr("width", CELL_SIZE)
-        .attr("height", CELL_SIZE)
-        .attr("fill-opacity", 0.3)
-        .attr("class", function(d) {
-          if(d.attribute === -1) // Blockage
-            return d.layer === 1 ?  "layer1_obstacles" : "layer2_obstacles";
-          else
-            return d.layer === 1 ?  "layer1_cost" : "layer2_cost";
-         })
-        .style("fill", function(d) {
-          if(d.attribute === -1) // Blockage
-            return d.layer === 1 ? LAYER1_COLOR : LAYER2_COLOR;
-          else if(d.attribute !== 1)
-            return grayScale(d.attribute);
-          else
-            return "none"; // Special case unit-cost so that we don't have off white colors
-         });
+          .attr("y", function(d) {
+            return yShift(d.y)})
+            .attr("width", CELL_SIZE)
+            .attr("height", CELL_SIZE)
+            .attr("fill-opacity", 0.3)
+            .attr("class", function(d) {
+              if(d.attribute === -1) // Blockage
+                return d.layer === 1 ?  "layer1_obstacles" : "layer2_obstacles";
+              else
+                return d.layer === 1 ?  "layer1_cost" : "layer2_cost";
+            })
+            .style("fill", function(d) {
+              if(d.attribute === -1) // Blockage
+                return d.layer === 1 ? LAYER1_COLOR : LAYER2_COLOR;
+              else if(d.attribute !== 1)
+                return grayScale(d.attribute);
+              else
+                return "none"; // Special case unit-cost so that we don't have off white colors
+            });
+      }
+
+      var removeEmptyData = function(data) {
+        return data.filter(function(element, index, array) {
+          return element.attribute != 1; // Don't draw unit cost cells
+        });
       }
 
       var xCenter, yCenter; // Functions that will be used in the drawing routines
@@ -426,7 +432,7 @@ var edu = {
         svg.selectAll(".cells").remove(); // Clear previous routes, if any.
 
         d3.selectAll(".tooltip").remove(); // Clear previous tooltips, if any
-        
+
         var div = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
