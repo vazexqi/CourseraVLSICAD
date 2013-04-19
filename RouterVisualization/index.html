@@ -199,14 +199,14 @@ var edu = {
 
           // Subsequent lines specify the position routes (which cells are on)
           for(lineIndex = 1; lineIndex < lines.length; lineIndex++) {
-            rawLine = lines[lineIndex];
+            rawLine = lines[lineIndex].trim();
             if(!isBlank(rawLine)) {
               if(isNetStartingSymbol(rawLine)) {
-                netNumber = parseInt(rawLine.trim());
+                netNumber = parseInt(rawLine);
                 currentNetData = {net: netNumber, points: []};
               }
               else if(isPossibleRoutingCell(rawLine)) {
-                splitData = rawLine.trim().split(/\s+/);
+                splitData = rawLine.split(/\s+/);
                 layer = parseInt(splitData[0]);
                 x = parseInt(splitData[1]);
                 y = parseInt(splitData[2]);
