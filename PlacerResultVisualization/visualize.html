@@ -113,19 +113,25 @@ var edu = {
           var data = [];
 
           var lineIndex, rawLine, splitData;
-          var id, x, y;
+          var isPadData = false;
+          var x, y;
           for(lineIndex = 0; lineIndex < lines.length; lineIndex++) {
             rawLine = lines[lineIndex]; // e.g., 1 xx.xx yy.yyy
-            if(!isBlank(rawLine)) {
-              splitData = rawLine.trim().split(/\s+/);
-              id = parseInt(splitData[0]);
-              x = parseFloat(splitData[1]);
-              y = parseFloat(splitData[2]);
-              data.push({id: id, x: x, y: y}); // Construct a new object on the fly and add it
+            splitData = rawLine.trim().split(/\s+/);
+
+            if(splitData.length === 1) { 
+              isPadData = true;
+              continue; // Skip over this line
+            }
+
+            if(isPadData) {
+              x = parseFloat(splitData[2]);
+              y = parseFloat(splitData[3]);
+              data.push({x: x, y: y}); // Construct a new object on the fly and add it
             }
           }
 
-          drawVisualization(data);
+          drawPads(data);
 
         };
         reader.readAsText(netlist);
@@ -224,7 +230,28 @@ var edu = {
       .attr("class", "tooltip")
       .style("opacity", 0);
 
-      function drawVisualization(data) {
+      var drawPads = function(data) {
+        // Clear all previous pads
+        svg.selectAll("rect").remove();
+
+        // Populate with new data
+
+        var LENGTH = 10;
+
+        svg.selectAll("rect")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("width", LENGTH)
+        .attr("height", LENGTH)
+        .attr("x", function(d) {
+          return x(d.x) - LENGTH / 2})
+        .attr("y", function(d) {
+          return y(d.y) - LENGTH / 2})
+        .style("fill", d3.rgb("darkblue"));
+      };
+
+      var drawVisualization = function (data) {
         // Clear all previous nodes
         svg.selectAll("circle").remove();
 
@@ -253,7 +280,7 @@ var edu = {
           .duration(100)
           .style("opacity", 0);
         });
-      }
+      };
 
       return {
         handleDragOver: handleDragOver,
