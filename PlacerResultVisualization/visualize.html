@@ -19,7 +19,7 @@ Released under the University of Illinois/NCSA Open Source License
 <script type="text/javascript" src="https://spark-public.s3.amazonaws.com/vlsicad/javascript_tools/d3.min.js" charset="utf-8"></script>
 
 <style>
-  #drop_zone{
+  .drop_zone{
     border:2px dashed #bbb;
     -moz-border-radius:5px;
     -webkit-border-radius:5px;
@@ -28,6 +28,12 @@ Released under the University of Illinois/NCSA Open Source License
     text-align:center;
     font:20pt bold,"Vollkorn";
     color:#bbb
+  }
+
+  .placer_visualization {
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto
   }
 
   /* For actual chart */
@@ -72,7 +78,8 @@ Released under the University of Illinois/NCSA Open Source License
 
 </head>
 <body>
-<div id="drop_zone">Drop placement result file here</div>
+<div id="benchmark_zone" class="drop_zone" style="float:left; width:45%">1) Drop benchmark file here</div>
+<div id="placer_zone" class="drop_zone" style="float:right; width:45%">2) Drop placement result file here</div>
 
 <script type="text/javascript">
 
@@ -161,7 +168,9 @@ var edu = {
       .tickValues([0, 12.5, 25, 37.5, 50, 62.5, 75, 87.5, 100])
       .tickSize(-size);
 
-      var svg = d3.select("body").append("svg")
+      var svg = d3.select("body").append("div")
+      .attr("class", "placer_visualization")
+      .append("svg")
       .attr("width", size + padding)
       .attr("height", size + padding)
       .append("g")
@@ -221,7 +230,7 @@ var edu = {
 };
 
   // Setup the dnd listeners.
-  var dropZone = document.getElementById('drop_zone');
+  var dropZone = document.getElementById('placer_zone');
   dropZone.addEventListener('dragover', edu.illinois.vlsicad.handleDragOver, false);
   dropZone.addEventListener('drop', edu.illinois.vlsicad.handleFileSelect, false);
 
