@@ -95,8 +95,43 @@ var edu = {
       //////////////////
       // For drag-n-drop
       //////////////////
+      var handleFileSelectBenchmark = function(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
 
-      var handleFileSelect= function(evt) {
+        var files = evt.dataTransfer.files; // FileList object.
+
+        // User can drag-n-drop multiple files at once so we pick only the first one.
+        // I don't know of a way to prevent drag-n-drop of multiple files at once.
+
+        var netlist = files[0];
+        var reader = new FileReader();
+        reader.onload = function(event) {
+          var rawText = event.target.result;
+          var lines = rawText.split("\n");
+
+          var data = [];
+
+          var lineIndex, rawLine, splitData;
+          var id, x, y;
+          for(lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+            rawLine = lines[lineIndex]; // e.g., 1 xx.xx yy.yyy
+            if(!isBlank(rawLine)) {
+              splitData = rawLine.trim().split(/\s+/);
+              id = parseInt(splitData[0]);
+              x = parseFloat(splitData[1]);
+              y = parseFloat(splitData[2]);
+              data.push({id: id, x: x, y: y}); // Construct a new object on the fly and add it
+            }
+          }
+
+          drawVisualization(data);
+
+        };
+        reader.readAsText(netlist);
+      };
+
+      var handleFileSelectPlacer = function(evt) {
         evt.stopPropagation();
         evt.preventDefault();
 
@@ -220,20 +255,24 @@ var edu = {
         });
       }
 
-        return {
-          handleDragOver: handleDragOver,
-          handleFileSelect: handleFileSelect
-        };
+      return {
+        handleDragOver: handleDragOver,
+        handleFileSelectBenchmark: handleFileSelectBenchmark,
+        handleFileSelectPlacer: handleFileSelectPlacer
+      };
 
       })()
   }
 };
 
   // Setup the dnd listeners.
-  var dropZone = document.getElementById('placer_zone');
-  dropZone.addEventListener('dragover', edu.illinois.vlsicad.handleDragOver, false);
-  dropZone.addEventListener('drop', edu.illinois.vlsicad.handleFileSelect, false);
+  var benchmarkZone = document.getElementById('benchmark_zone');
+  benchmarkZone.addEventListener('dragover', edu.illinois.vlsicad.handleDragOver, false);
+  benchmarkZone.addEventListener('drop', edu.illinois.vlsicad.handleFileSelectBenchmark, false);
 
+  var placerZone = document.getElementById('placer_zone');
+  placerZone.addEventListener('dragover', edu.illinois.vlsicad.handleDragOver, false);
+  placerZone.addEventListener('drop', edu.illinois.vlsicad.handleFileSelectPlacer, false);
 </script>
 </body>
 </html>
