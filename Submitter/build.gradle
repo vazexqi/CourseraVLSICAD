@@ -30,7 +30,7 @@ task(gui, dependsOn: [compileGroovy], type: JavaExec) {
 }
 
 task(packageSubmitter, dependsOn: [compileGroovy], type: Jar) {
-    baseName = 'Submitted'
+    baseName = 'Submitter'
     version = '1.0.1'
     from sourceSets.main.output.classesDir
     include 'edu/illinois/vlsicad/core/submission/*'

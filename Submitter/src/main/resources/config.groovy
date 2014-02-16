@@ -3,5 +3,5 @@ window {
 }
 
 core {
-    course.session = "vlsicad-001"
+    course.session = "vlsicad-002"
 }
