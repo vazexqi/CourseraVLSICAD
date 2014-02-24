@@ -1,4 +1,4 @@
-package edu.illinois.vlsicad.assignments.bc
+package edu.illinois.vlsicad.assignment.bc
 
 import edu.illinois.vlsicad.core.Grade
 import edu.illinois.vlsicad.core.Grader
@@ -38,6 +38,6 @@ class BCGrader extends Grader {
 
     @Override
     def queueName() {
-        "course_382_queue_bc-calculator"
+        "bc-calculator"
     }
 }

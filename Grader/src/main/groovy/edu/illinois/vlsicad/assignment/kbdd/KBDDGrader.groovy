@@ -48,7 +48,7 @@ class KBDDGrader extends Grader {
 
     @Override
     def queueName() {
-        "course_382_queue_kbdd-interface"
+        "kbdd-interface"
     }
 }
 

@@ -1,4 +1,4 @@
-package edu.illinois.vlsicad.assignments.bc
+package edu.illinois.vlsicad.assignment.bc
 
 while (true) {
     def grader = new BCGrader();
