@@ -20,7 +20,7 @@ repositories {
 dependencies {
     // Libraries for Groovy
     compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.1.0'
-    compile group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: '0.6'
+    compile group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: '0.7'
 }
 
 task(bcGrader, dependsOn: [compileGroovy], type: JavaExec) {
